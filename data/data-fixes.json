@@ -116,5 +116,54 @@
    "retrieved": "2026-11-03",
    "note": "Canvas lines 77-82 checked; not edited."
   }
- ]
+ ],
+ "round2": {
+  "date": "2026-11-03",
+  "canvas_edited": false,
+  "items": [
+   {
+    "id": "onp.end-health-and-education-duplication",
+    "fix": "Replace SMH defence link with https://www.onenation.org.au/slash-waste (fetched 200). Policy = review of federal Education and Housing departments to eliminate duplication; no costing. Supporting: https://www.onenation.org.au/failing-education-australia"
+   },
+   {
+    "id": "policy_sources",
+    "fix": "policy_source_url added in estimates.json for rep.deregulation, rep.energy-supply-plans, dem.grocery-pricing-bills, lnp.spending-cap, lnp.surplus-target, grn.rent-controls, lnp.gas-reservation; state.policies left null (no single source). Method notes unchanged."
+   },
+   {
+    "id": "program_sizes",
+    "fix": "2026-27, $bn: Age Pension 68.670 (DSS PBS Prog 1.3); NDIS 56.124 (BP1 St6 Table 6.1.3); CCS 16.917 (Education PBS Prog 1.2); FTB 18.150 (DSS PBS Prog 1.1, A 14.119 + B 4.031). BP1: https://budget.gov.au/content/bp1/download/bp1_bs-6.pdf. checkrate/datawithoutguessing/advocacyforinclusion removed."
+   },
+   {
+    "id": "learn_more_links",
+    "fix": {
+     "Grattan Institute": "https://grattan.edu.au/report/budget-reboot-how-to-fund-australias-future/",
+     "e61 Institute": "https://e61.in/wp-content/uploads/2026/09/How-many-housing-investors-pay-more-tax-under-the-reforms.pdf",
+     "Productivity Commission": "https://www.pc.gov.au/inquiries-and-research/",
+     "ANU TTPI": "https://crawford.anu.edu.au/ttpi/research (box curl to taxpolicy.crawford.anu.edu.au timed out; page confirmed in search index, not load-checked from box)",
+     "RBA education": "https://www.rba.gov.au/education/resources/explainers/"
+    },
+    "checked": "All 200 from box except ANU (see note)."
+   },
+   {
+    "id": "grn.carbon-price",
+    "fix": "Keep placeholder. PBO page found: https://www.pbo.gov.au/elections/2025-general-election/2025-election-commitments-costings/powering-past-coal-and-gas-make-polluters-pay-damage-they-are-doing (ECR-2025-3365, $100/t on emitters ≥25kt, from 1 Jul 2025) but the figure is in a PDF the box can't fetch; ~$10.8bn/decade snippet still unconfirmed. Interacts with 12 other Greens measures (ECR-2025-3901)."
+   },
+   {
+    "id": "grn.rent-freeze",
+    "fix": "Median rent $713/wk, Sep qtr 2026, Cotality (published 2026-10-09) https://www.cotality.com/au/insights/articles/rental-growth-loses-momentum-as-vacancy-rates-rise; +5.5% y/y. Alt: REA $675/wk."
+   },
+   {
+    "id": "sector.agri.usJobs",
+    "fix": "1,231,078 private (total 1,235,695) NAICS 11, US, 2025 annual average, BLS QCEW API https://data.bls.gov/cew/data/api/2025/a/industry/11.csv"
+   },
+   {
+    "id": "us.tariffs.regime.republican",
+    "fix": "Party leaders back keeping current tariffs: Section 232 product tariffs and the Section 301 forced-labour tariffs that replaced the expired Section 122 surcharge (IEEPA tariffs struck down 20 Feb 2026). No new across-the-board rate stated."
+   },
+   {
+    "id": "logic_check",
+    "fix": "All 3 approved explorer fixes present in merged canvas: (1) labour-income gating line 1426-1427 (retiree/student/smb default labour 0), WATO/deduction use labour; (2) Coalition window sums coalitionUCB.slice(1) from 2026-27 (line 1455, text 1533); (3) Greens childcare note line 1495. Minor: chart at line 1535 still shows the 2025-26 bar. Spec for developer (optional): drop index 0 from labels and data in that chart, or label it '2025–26 (outside window)'."
+   }
+  ]
+ }
 }

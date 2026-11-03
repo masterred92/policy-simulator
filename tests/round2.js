@@ -1,0 +1,8 @@
+const L=require("./lib");(async()=>{const {b,pg,f}=await L.open(390,844);await L.go(f,"Parties: compare all");
+await f.evaluate(()=>[...document.querySelectorAll("button")].find(b=>b.textContent.trim()==="US Republicans").click());await L.w(600);
+let t=await f.evaluate(()=>document.body.innerText);console.log("rep wording",/Section 301 forced-labour tariffs that replaced/.test(t),"| policy link",/Policy: https:\/\/prod-static.gop.com/.test(t));
+await L.go(f,"Sectors");await f.evaluate(()=>[...document.querySelectorAll("button")].find(b=>b.textContent.trim()==="US")?.click());await L.w(600);t=await f.evaluate(()=>document.body.innerText);console.log("ag 1,231,078",/1,231,078/.test(t));
+await L.go(f,"Australian household by party");t=await f.evaluate(()=>document.body.innerText+[...document.querySelectorAll("svg")].map(s=>s.textContent).join(" ")+[...document.querySelectorAll("a")].map(a=>a.href).join(" "));
+console.log("outside window",/2025–26 \(outside window\)/.test(t),"| grattan",/budget-reboot/.test(t),"| rba explainers",/education\/resources\/explainers/.test(t),"| anu unchanged",/taxpolicy.crawford.anu.edu.au/.test(t));
+for(const p of ["One Nation","Greens","Current programs (size only)"]){await f.evaluate(p=>[...document.querySelectorAll("[data-estimates] button")].find(b=>b.textContent.trim()===p)?.click(),p);await L.w(500);const e=await f.evaluate(()=>document.querySelector("[data-estimates]").innerText);console.log(p,"| slash-waste",/slash-waste/.test(e),"| $713",/\$713\/wk/.test(e),"| mirrors gone",!/checkrate|datawithoutguessing|advocacyforinclusion/.test(e),"| 56.124",/56\.124/.test(e),"| NaN",/NaN/.test(e))}
+await b.close()})();

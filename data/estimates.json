@@ -2,7 +2,7 @@
  "verification_summary": {
   "date": "2026-11-03",
   "entries": 32,
-  "verified_this_turn": 24,
+  "verified": 24,
   "not_verified": 8,
   "changed_from_v1": 20,
   "published": 13,
@@ -18,7 +18,8 @@
    "Previous version saved as estimates.v1.json",
    "Update 13:30: defence, migration, rent CPI verified; carbon levy PBO figure still not retrievable; retiree threshold & duplication: no costing exists."
   ],
-  "date_updated": "2026-11-03"
+  "date_updated": "2026-11-03",
+  "round2_note": "2026-11-03: 4 program sizes now primary sources; rent freeze median verified."
  },
  "estimates": [
   {
@@ -81,7 +82,9 @@
     "high": 20,
     "unit": "USD bn/yr (+ = cost, - = saving)"
    },
-   "changed": false
+   "changed": false,
+   "policy_source_url": "https://prod-static.gop.com/media/RNC2024-Platform.pdf",
+   "policy_note": "RNC 2024 platform (current national platform; no 2026 platform found). See also House Speaker release https://mikejohnson.house.gov/news/documentsingle.aspx?DocumentID=2876"
   },
   {
    "id": "rep.energy-supply-plans",
@@ -112,7 +115,9 @@
     "high": 5,
     "unit": "USD bn/yr (+ = cost, - = saving)"
    },
-   "changed": false
+   "changed": false,
+   "policy_source_url": "https://prod-static.gop.com/media/RNC2024-Platform.pdf",
+   "policy_note": "RNC 2024 platform, 'energy dominance' chapter."
   },
   {
    "id": "dem.drug-price-bills",
@@ -174,7 +179,9 @@
     "high": 1,
     "unit": "USD bn/yr (+ = cost, - = saving)"
    },
-   "changed": false
+   "changed": false,
+   "policy_source_url": "https://www.congress.gov/bill/119th-congress/senate-bill/3892/all-info",
+   "policy_note": "S.3892 Stop Price Gouging in Grocery Stores Act of 2026 (Luján); also H.R.8895 No Rigged Grocery Prices Act https://www.congress.gov/bill/119th-congress/house-bill/8895/text/ih. congress.gov returns 403 to the box; confirmed via search index."
   },
   {
    "id": "lnp.repeal-capital-gains-trust-and-negative-gearing-changes",
@@ -236,7 +243,9 @@
     "high": 0,
     "unit": "AUD bn/yr (+ = cost to budget, - = saving)"
    },
-   "changed": true
+   "changed": true,
+   "policy_source_url": "https://www.liberal.org.au/2026/10/26/coalition-will-cut-labors-waste-cut-taxes-and-tackle-the-cost-of-living",
+   "policy_note": "Coalition 26 Oct 2026: $31.3bn savings 2028-29 to 2031-32, spending growth below economy growth, tax cap. Box got 403; content confirmed via search index and ABC https://www.abc.net.au/news/2026-10-26/coalition-says-cuts-to-save-budget-31-billion/107310512"
   },
   {
    "id": "lnp.surplus-target",
@@ -267,7 +276,9 @@
     "high": 0,
     "unit": "AUD bn/yr (+ = cost to budget, - = saving)"
    },
-   "changed": false
+   "changed": false,
+   "policy_source_url": "https://www.liberal.org.au/2026/10/26/coalition-will-cut-labors-waste-cut-taxes-and-tackle-the-cost-of-living",
+   "policy_note": "Same 26 Oct 2026 announcement (return to surplus)."
   },
   {
    "id": "grn.carbon-price",
@@ -360,7 +371,9 @@
     "high": 1,
     "unit": "AUD bn/yr (+ = cost to budget, - = saving)"
    },
-   "changed": false
+   "changed": false,
+   "policy_source_url": "https://greens.org.au/news/media-release/housing-battle-lines-drawn-labor-tinkers-while-prices-soar-dutton-sends-prices",
+   "policy_note": "Greens: rent freeze, then caps on increases."
   },
   {
    "id": "onp.abolish-climate-department",
@@ -391,7 +404,9 @@
     "high": -0.4,
     "unit": "AUD bn/yr (+ = cost to budget, - = saving)"
    },
-   "changed": true
+   "changed": true,
+   "policy_source_url": "https://www.onenation.org.au/slash-waste",
+   "policy_note": "One Nation claims ~$30bn/yr saving (party figure, unverified; DCCEEW departmental spend is far smaller)."
   },
   {
    "id": "onp.scrap-sbs",
@@ -515,7 +530,9 @@
     "high": -0.1,
     "unit": "AUD bn/yr (+ = cost to budget, - = saving)"
    },
-   "changed": true
+   "changed": true,
+   "policy_source_url": "https://www.onenation.org.au/slash-waste",
+   "policy_note": "One Nation policy commits only to a 'review of the functions and costs of the Federal Departments of Education and Housing to eliminate duplication'; a separate One Nation article calls for disbanding the federal education department (https://www.onenation.org.au/failing-education-australia). No costing. Replaces SMH defence link."
   },
   {
    "id": "onp.fuel-excise-halving",
@@ -731,7 +748,9 @@
     "high": 0.5,
     "unit": "AUD bn/yr (+ = cost to budget, - = saving)"
    },
-   "changed": false
+   "changed": false,
+   "policy_source_url": "https://www.nationals.org.au/election-policies/our-plan-to-deliver-australian-gas-for-australians",
+   "policy_note": "PBO costing: https://www.pbo.gov.au/elections/2025-general-election/2025-election-commitments-costings/deliver-national-gas-plan-east-coast-gas-reservation"
   },
   {
    "id": "grn.rent-freeze",
@@ -741,7 +760,7 @@
    "type": "projected",
    "source_url": "https://www.abs.gov.au/media-centre/media-releases/cpi-rose-43-year-september-2026",
    "orientation": "n/a",
-   "method": "Household saving ≈ forgone rent rises: ABS CPI rents +3.6% yr to Sep qtr 2026 × median rent (not fetched; ~A$30k/yr assumed) over 2-yr freeze → ~$1,100/yr first year, ~$2,200 second. Range 0-3,000.",
+   "method": "Household saving ≈ forgone rent rises: ABS CPI rents +3.6% yr to Sep qtr 2026 × median rent (not fetched; ~A$30k/yr assumed) over 2-yr freeze → ~$1,100/yr first year, ~$2,200 second. Range 0-3,000. Median rent $713/wk (Cotality, Sep qtr 2026, +5.5% y/y): a freeze forgoing one year's growth ≈ $39/wk ≈ $2,040/yr per renting household at the median.",
    "as_of": "2026-09 qtr",
    "retrieved": "2026-11-03 (rent CPI only; median rent not verified)",
    "confidence": "low",
@@ -758,7 +777,17 @@
     "high": 4000,
     "unit": "AUD per renting household per yr (saving)"
    },
-   "changed": true
+   "changed": true,
+   "policy_source_url": "https://greens.org.au/news/media-release/housing-battle-lines-drawn-labor-tinkers-while-prices-soar-dutton-sends-prices",
+   "policy_note": "Greens: national rent freeze then caps.",
+   "median_rent": {
+    "value_aud_per_week": 713,
+    "as_of": "Sep quarter 2026",
+    "publisher": "Cotality Quarterly Rental Review, published 2026-10-09",
+    "source_url": "https://www.cotality.com/au/insights/articles/rental-growth-loses-momentum-as-vacancy-rates-rise",
+    "retrieved": "2026-11-03",
+    "alt": "REA Group advertised median $675/wk Sep 2026"
+   }
   },
   {
    "id": "grn.dental-medicare",
@@ -820,9 +849,9 @@
    "page": "explorer",
    "label": "Family Tax Benefit A+B (program size) (estimate)",
    "type": "published",
-   "source_url": "https://checkrate.com.au/family-payments/",
+   "source_url": "https://www.dss.gov.au/system/files/documents/2026-05/portfolio-budget-statements-2026-27-social-services.pdf",
    "orientation": "Official Budget data (secondary mirror)",
-   "method": "DSS PBS 2026-27 via CheckRate (Part A $14,118.8m + Part B $4,031.2m). Budget estimate; MYEFO may revise.",
+   "method": "DSS PBS Program 1.1: FTB A $14,118.757m + FTB B $4,031.171m = $18,149.9m (program total $18,156.3m); BP1 Support for Families $18,148m. Secondary sources (checkrate, datawithoutguessing, advocacyforinclusion) dropped.",
    "as_of": "2026-05-12 (Budget)",
    "retrieved": "2026-11-03",
    "confidence": "high",
@@ -839,7 +868,13 @@
     "high": 21,
     "unit": "AUD bn/yr (+ = cost to budget, - = saving)"
    },
-   "changed": true
+   "changed": true,
+   "secondary_urls": [
+    "https://budget.gov.au/content/bp1/download/bp1_bs-6.pdf"
+   ],
+   "round2": {
+    "note": "DSS via search index; BP1 fetched directly"
+   }
   },
   {
    "id": "baseline.child-care-subsidy",
@@ -847,9 +882,9 @@
    "page": "explorer",
    "label": "Child Care Subsidy (program size) (estimate)",
    "type": "published",
-   "source_url": "https://checkrate.com.au/family-payments/",
+   "source_url": "https://www.education.gov.au/download/20342/2026-27-education-portfolio-budget-statements/44709/2026-27-education-portfolio-budget-statements/pdf",
    "orientation": "Official Budget data (secondary mirror)",
-   "method": "Education PBS 2026-27 via CheckRate ($16,917m). Budget estimate; MYEFO may revise.",
+   "method": "Education PBS 2026-27 Program 1.2 $16,917,002k; BP1 Table 6.1.3 $16,917m. Secondary sources (checkrate, datawithoutguessing, advocacyforinclusion) dropped.",
    "as_of": "2026-05-12 (Budget)",
    "retrieved": "2026-11-03",
    "confidence": "high",
@@ -866,7 +901,13 @@
     "high": 16,
     "unit": "AUD bn/yr (+ = cost to budget, - = saving)"
    },
-   "changed": true
+   "changed": true,
+   "secondary_urls": [
+    "https://budget.gov.au/content/bp1/download/bp1_bs-6.pdf"
+   ],
+   "round2": {
+    "note": "fetched via search index; BP1 fetched directly"
+   }
   },
   {
    "id": "baseline.age-pension",
@@ -874,9 +915,9 @@
    "page": "explorer",
    "label": "Age Pension (program size) (estimate)",
    "type": "published",
-   "source_url": "https://data.datawithoutguessing.com/Files/T0_DWG/Budget/BudgetPaper/2026-27-social-services.pdf",
+   "source_url": "https://www.dss.gov.au/system/files/documents/2026-05/portfolio-budget-statements-2026-27-social-services.pdf",
    "orientation": "Official Budget data (secondary mirror)",
-   "method": "DSS PBS 2026-27, component 1.3.1 ($68,670.1m). Budget estimate; MYEFO may revise.",
+   "method": "DSS PBS 2026-27 Program 1.3 Age Pension $68,670,141k; BP1 St6 Table 6.1.3 Support for Seniors $68,727m (fetched). Secondary sources (checkrate, datawithoutguessing, advocacyforinclusion) dropped.",
    "as_of": "2026-05-12 (Budget)",
    "retrieved": "2026-11-03",
    "confidence": "high",
@@ -893,7 +934,13 @@
     "high": 66,
     "unit": "AUD bn/yr (+ = cost to budget, - = saving)"
    },
-   "changed": true
+   "changed": true,
+   "secondary_urls": [
+    "https://budget.gov.au/content/bp1/download/bp1_bs-6.pdf"
+   ],
+   "round2": {
+    "note": "DSS PDF via search index (box download failed); BP1 fetched directly"
+   }
   },
   {
    "id": "baseline.ndis",
@@ -901,17 +948,17 @@
    "page": "explorer",
    "label": "NDIS (program size) (estimate)",
    "type": "published",
-   "source_url": "https://www.advocacyforinclusion.org/whats-in-the-2026-27-federal-budget-for-canberrans-with-disability13-may-2026/",
+   "source_url": "https://budget.gov.au/content/bp1/download/bp1_bs-6.pdf",
    "orientation": "Official Budget data (secondary mirror)",
-   "method": "2026-27 Budget NDIS expenses $56.1bn (via Advocacy for Inclusion; disability advocacy org). Budget estimate; MYEFO may revise.",
+   "method": "BP1 St6 Table 6.1.3 NDIS $56,124m (Table 6.9.2: $56,125m). Secondary sources (checkrate, datawithoutguessing, advocacyforinclusion) dropped.",
    "as_of": "2026-05-12 (Budget)",
    "retrieved": "2026-11-03",
    "confidence": "high",
    "estimate": true,
    "is_program_size": true,
-   "low": 56.1,
-   "central": 56.1,
-   "high": 56.1,
+   "low": 56.124,
+   "central": 56.124,
+   "high": 56.124,
    "unit": "AUD bn/yr",
    "unit_basis": "Program size: total annual 2026-27 Budget expense, not a policy change; never add to party totals.",
    "previous": {
@@ -920,7 +967,13 @@
     "high": 56,
     "unit": "AUD bn/yr (+ = cost to budget, - = saving)"
    },
-   "changed": true
+   "changed": true,
+   "secondary_urls": [
+    "https://budget.gov.au/content/bp1/download/bp1_bs-6.pdf"
+   ],
+   "round2": {
+    "note": "fetched directly"
+   }
   },
   {
    "id": "state.policies",
@@ -947,7 +1000,74 @@
     "high": 2000,
     "unit": "AUD per household per yr"
    },
-   "changed": false
+   "changed": false,
+   "policy_source_url": null,
+   "policy_note": "No single party document exists; state policies vary by jurisdiction. Policy source must be per-state (e.g. vic.onenation.org.au/health). Left null deliberately."
   }
- ]
+ ],
+ "round2": {
+  "date": "2026-11-03",
+  "changes": [
+   {
+    "id": "baseline.age-pension",
+    "what": "program size replaced with primary BP1/PBS figure"
+   },
+   {
+    "id": "baseline.ndis",
+    "what": "program size replaced with primary BP1/PBS figure"
+   },
+   {
+    "id": "baseline.child-care-subsidy",
+    "what": "program size replaced with primary BP1/PBS figure"
+   },
+   {
+    "id": "baseline.family-tax-benefit",
+    "what": "program size replaced with primary BP1/PBS figure"
+   },
+   {
+    "id": "grn.rent-freeze",
+    "what": "median rent $713/wk Cotality Sep qtr 2026 added"
+   },
+   {
+    "id": "onp.end-health-and-education-duplication",
+    "what": "policy_source_url added"
+   },
+   {
+    "id": "grn.rent-controls",
+    "what": "policy_source_url added"
+   },
+   {
+    "id": "lnp.gas-reservation",
+    "what": "policy_source_url added"
+   },
+   {
+    "id": "lnp.spending-cap",
+    "what": "policy_source_url added"
+   },
+   {
+    "id": "lnp.surplus-target",
+    "what": "policy_source_url added"
+   },
+   {
+    "id": "rep.deregulation",
+    "what": "policy_source_url added"
+   },
+   {
+    "id": "rep.energy-supply-plans",
+    "what": "policy_source_url added"
+   },
+   {
+    "id": "dem.grocery-pricing-bills",
+    "what": "policy_source_url added"
+   },
+   {
+    "id": "state.policies",
+    "what": "policy_source_url added"
+   },
+   {
+    "id": "onp.abolish-climate-department",
+    "what": "policy_source_url added"
+   }
+  ]
+ }
 }
