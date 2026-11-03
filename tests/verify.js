@@ -1,0 +1,21 @@
+const L=require("./lib");(async()=>{for(const W of [390,1280]){const touch=W<500;const {b,pg,f}=await L.open(W,844);const fe=await (await f.frameElement()).boundingBox();
+const tapEl=async(js)=>{const r=await f.evaluate(js);if(touch)await pg.touchscreen.tap(fe.x+r.x,fe.y+r.y);else await pg.mouse.click(fe.x+r.x,fe.y+r.y);await L.w(700);};
+const pos=s=>`(()=>{const e=${s};e.scrollIntoView({block:"center"});const q=e.getBoundingClientRect();return{x:q.x+q.width/2,y:q.y+q.height/2}})()`;
+const strip=()=>f.evaluate(()=>document.querySelector("[data-changes]")?.innerText);
+const s0=await strip();await tapEl(pos(`[...document.querySelectorAll("button")].find(b=>b.textContent.trim()==="Reset to no change")`));const s1=await strip();
+await tapEl(pos(`[...document.querySelectorAll("button")].find(b=>b.textContent.trim()==="Reset to no change").parentElement.querySelectorAll("button")[2]`));const s2=await strip();
+await pg.screenshot({path:`../screens/fix2_${W}_landing_after_tap.png`});
+console.log(W,"LANDING default:",s0?.slice(0,90),"\n  reset:",s1?.slice(0,60),"\n  tap scenario:",s2?.slice(0,160));
+await L.go(f,"Parties: compare all");
+const sl=await f.evaluate(()=>{const e=document.querySelector("[data-years-slider] input");e.scrollIntoView({block:"center"});const q=e.getBoundingClientRect();return{x:q.x,y:q.y+q.height/2,w:q.width,v:e.value,t:document.querySelector("[data-years-slider]").innerText,svg:[...document.querySelectorAll("svg")].map(s=>s.innerHTML).join("").length}});
+const sx=fe.x+sl.x+sl.w*(Number(sl.v)/9),tx=fe.x+sl.x+sl.w*0.9,Y=fe.y+sl.y;
+if(touch){await pg.touchscreen.touchStart(sx,Y);for(let k=1;k<=10;k++){await pg.touchscreen.touchMove(sx+(tx-sx)*k/10,Y);await L.w(20);}await pg.touchscreen.touchEnd();}else{await pg.mouse.move(sx,Y);await pg.mouse.down();for(let k=1;k<=10;k++){await pg.mouse.move(sx+(tx-sx)*k/10,Y);await L.w(15);}await pg.mouse.up();}
+await L.w(700);const sl2=await f.evaluate(()=>({v:document.querySelector("[data-years-slider] input").value,t:document.querySelector("[data-years-slider]").innerText,svg:[...document.querySelectorAll("svg")].map(s=>s.innerHTML).join("").length,nan:[...document.querySelectorAll("svg")].some(s=>/NaN|undefined/.test(s.innerHTML)),sx:scrollX}));
+console.log(W,"SLIDER",sl.v,"->",sl2.v,"|",sl2.t.slice(0,50),"| charts changed",sl.svg!==sl2.svg,"| NaN in svg",sl2.nan,"| scrollX",sl2.sx);
+await tapEl(pos(`[...document.querySelectorAll("button")].find(b=>b.textContent.trim()==="One Nation")`));
+const c0=await f.evaluate(()=>({chips:[...document.querySelectorAll("[data-chip]")].map(e=>e.textContent),body:document.body.innerText,svg:[...document.querySelectorAll("svg")].map(s=>s.innerHTML).join("")}));
+await tapEl(pos(`document.querySelector("[data-chip]")`));
+const c1=await f.evaluate(()=>({chips:[...document.querySelectorAll("[data-chip]")].map(e=>e.textContent),row:[...document.querySelectorAll("[data-table-grid]")].map(t=>t.innerText).find(t=>/Impact of each item/.test(t))?.split("\n").slice(0,8).join(" / "),svg:[...document.querySelectorAll("svg")].map(s=>s.innerHTML).join("")}));
+console.log(W,"CHIP",c0.chips[0],"->",c1.chips[0],"| charts changed",c0.svg!==c1.svg,"\n  impact:",c1.row);
+await f.evaluate(()=>document.querySelector("[data-chip]").scrollIntoView({block:"start"}));await pg.screenshot({path:`../screens/fix2_${W}_parties_chip_excluded.png`});
+await b.close();}})();

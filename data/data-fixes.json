@@ -1,0 +1,120 @@
+{
+ "generated": "2026-11-03",
+ "canvas_edited": false,
+ "items": [
+  {
+   "id": "lnp.nuclear",
+   "question": "Budget or system cost?",
+   "value": {
+    "budget_equity_to_2035_bn": 36.4,
+    "budget_equity_to_2050_bn": 118.2,
+    "underlying_cash_impact": "equity injections excluded from underlying cash balance; appear in headline cash balance",
+    "system_cost_frontier_bn": 331,
+    "system_cost_frontier_step_change_bn": 446,
+    "system_cost_climate_council_bn": [
+     775,
+     821
+    ]
+   },
+   "recommendation": "Keep lnp.nuclear OUT of the Coalition budget subtotal. Show (a) 'System cost (whole economy, 2025-2050)': Frontier $331bn (Progressive Change) / $446bn (Step Change) vs Climate Council $775-821bn, and (b) separately 'Budget: government equity $36.4bn to 2035, $118.2bn to 2050 — headline cash/debt only, not underlying deficit; Coalition figure, not independently costed by PBO'. Small appropriations ($87m community engagement, $65m coordinating authority/training) are budget items.",
+   "source_url": "https://www.pbo.gov.au/elections/2025-general-election/2025-election-commitments-costings/announced-commitments-establish-civil-nuclear-program-including-operating-nuclear-power-plants-in-7-locations-across-country",
+   "other_sources": [
+    "https://www.pbo.gov.au/elections/2025-general-election/2025-election-commitments-report/major-party-election-commitments",
+    "https://theconversation.com/the-coalitions-costings-show-some-savings-but-a-larger-deficit-than-labor-in-the-first-two-years-255592",
+    "https://www.climatecouncil.org.au/resources/economic-meltdown-counting-the-real-cost-of-peter-duttons-nuclear-fantasy/",
+    "https://www.theguardian.com/australia-news/2025/apr/28/labor-says-the-csiro-put-a-600bn-price-tag-on-coalitions-nuclear-dreams-its-not-quite-right"
+   ],
+   "orientation": "PBO independent/official; Frontier Economics: Coalition-requested, self-funded modelling (Crikey reports pro-nuclear links); Climate Council: climate advocacy; The Conversation: academic commentary",
+   "as_of": "2025-05 (2025 election costing ECR-2025-2009)",
+   "retrieved": "2026-11-03 (via search index; PBO blocks direct fetch, PDF not opened)",
+   "note": "Coalition 2025 platform; no 2028 platform yet. The ~$600bn figure Labor cited came from Smart Energy Council, not CSIRO (Guardian). Frontier report itself not opened this turn."
+  },
+  {
+   "id": "onp.defence-3-5pct",
+   "value": {
+    "extra_cost_10yr_bn": 225,
+    "annual_avg_bn": 22.5,
+    "coalition_3pct_bn": 106,
+    "five_pct_bn": 579
+   },
+   "source_url": "https://www.smh.com.au/politics/federal/pauline-hanson-s-defence-spending-boost-would-cost-extra-225b-budget-office-says-20260621-p608p2.html",
+   "orientation": "PBO analysis (independent) reported by SMH",
+   "as_of": "2026-06-21",
+   "retrieved": "2026-11-03",
+   "note": "Article loads (search-index copy). PBO: 3.5% of GDP core defence by 2037 = +$225bn over decade vs current policy; lags likely. Replaces bare smh.com.au."
+  },
+  {
+   "id": "onp.migration-cut",
+   "value": {
+    "extra_gross_debt_bn": 275,
+    "output_loss_bn": 212,
+    "cumulative_deficits_10yr_bn": 391,
+    "vs_govt_cumulative_deficits_bn": 108,
+    "fewer_workers": 820000
+   },
+   "source_url": "https://www.theage.com.au/politics/federal/how-one-nation-s-negative-migration-plans-would-drive-up-debt-by-275b-20261018-p61575.html",
+   "mirror": "https://www.smh.com.au/politics/federal/how-one-nation-s-negative-migration-plans-would-drive-up-debt-by-275b-20261018-p61575.html",
+   "orientation": "Journalists' analysis using PBO 'Build your own Budget' tool (indicative, not a PBO costing)",
+   "as_of": "2026-10-18",
+   "retrieved": "2026-11-03",
+   "note": "Article loads (search-index copy). Budget effect ≈ (391-108)/10 = $28.3bn/yr extra deficit; assumes current migrant mix. Replaces bare theage.com.au."
+  },
+  {
+   "id": "sector.agri.usJobs",
+   "value": {
+    "qcew_naics11_private_2025": 1230725,
+    "qcew_naics11_total_2025": 1237362,
+    "ers_ag_incl_support_2024": 1180000
+   },
+   "recommended_value_thousands": 1231,
+   "source_url": "https://www.bls.gov/cew/publications/employment-and-wages-annual-averages/2025/home.htm",
+   "secondary": "https://datatactical.group/data/united-states/industry/11-agriculture-forestry-fishing-hunting; https://www.ers.usda.gov/data-products/chart-gallery/chart-detail?chartId=63453",
+   "orientation": "BLS/USDA official",
+   "as_of": "2025 annual average (QCEW); ERS 2024",
+   "retrieved": "2026-11-03 (1,230,725 via secondary QCEW aggregator; BLS page confirmed exists, table not opened)",
+   "note": "Definition: QCEW = UI-covered wage & salary jobs, annual average of 12 monthly counts, NAICS 11 (incl. forestry, fishing, hunting); excludes self-employed and many small farms. CES payrolls (used for other sectors) exclude agriculture, so label as 'QCEW, not CES'. Canvas currently shows 0 / 'n/a (farms not in BLS payrolls)'. Alternative crop+animal only: ERS 1.18m (2024, incl. support activities)."
+  },
+  {
+   "id": "us.tariffs.regime",
+   "value": {
+    "scotus": "Learning Resources, Inc. v. Trump (with Trump v. V.O.S. Selections), decided 2026-02-20: IEEPA does not authorise tariffs — CONFIRMED",
+    "section_122": "10% surcharge proclaimed after ruling (announced rise to 15%); expired 2026-07-24 (150-day limit)",
+    "section_301": "Forced-labor Section 301 tariffs on 60 economies effective 2026-07-24: generally 10% or 12.5%; MFN-based caps for EU, Taiwan, Japan, Korea, Switzerland (91 FR 47318, 2026-07-28)",
+    "section_232": "Product-specific tariffs (e.g. steel, aluminium, pharmaceuticals) remain",
+    "yale_statutory_rate_pct": 11.1,
+    "yale_statutory_end_2026_pct": 11.8,
+    "yale_effective_pre_sub_pct": 10.85,
+    "yale_effective_post_sub_pct": 9.05,
+    "taxfoundation_2026_effective_pct": 7.2,
+    "pwbm_aug_observed_pct": 7.1,
+    "yale_10yr_revenue_tn": 1.9
+   },
+   "source_url": "https://www.supremecourt.gov/opinions/25pdf/24-1287_4gcj.pdf",
+   "other_sources": {
+    "CRS": "https://www.congress.gov/crs-product/LSB11398",
+    "Federal Register": "https://www.federalregister.gov/documents/2026/07/28/2026-15181/notice-of-actions-in-section-301-investigations-of-acts-policies-and-practices-of-various-economies",
+    "USTR": "https://ustr.gov/about/policy-offices/press-office/press-releases/2026/july/ustr-takes-action-forced-labor-section-301-investigations",
+    "Yale Budget Lab": "https://budgetlab.yale.edu/research/state-us-tariffs",
+    "Tax Foundation": "https://taxfoundation.org/research/federal-tax/trump-tariffs-trade-war/",
+    "Penn Wharton": "https://budgetmodel.wharton.upenn.edu/p/2026-10-14-effective-tariff-rates-and-revenues-updated-october-14-2026/"
+   },
+   "orientation": "Supreme Court, CRS, Federal Register, USTR: official. Yale Budget Lab: nonpartisan academic (often described as centre-left-leaning staff). Tax Foundation: free-market/centre-right. Penn Wharton: nonpartisan academic.",
+   "as_of": "Yale PDF dated 2026-07-24 (statutory 11.1% read directly); effective 10.85/9.05 via search summary; Tax Foundation/PWBM 2026-10",
+   "retrieved": "2026-11-03",
+   "note": "Measures differ: Yale = statutory/modelled; Tax Foundation & PWBM = duties collected ÷ imports (7.1-7.2%). Give a range 7.1-11.1%."
+  },
+  {
+   "id": "sim.tariff.conflicts",
+   "value": [
+    "Democrats preset tariff -10 pts ('this Page's estimate'): exceeds the whole post-2024 increase (Yale ~8.5-8.7 pts above a ~2.4% 2024 baseline; collected-duty rate ~7.1%). Recommend -5 to -8.5 pts, central ~-7, labelled estimate, depending on which duties the bill ends.",
+    "Republicans '$5,000 tariff dividend, ~$1.2tn': tariff revenue base shrank after IEEPA was struck down; Yale projects ~$1.9tn over 10 yrs from current-law tariffs. Check the dividend source is post-Feb 2026 and note refunds of IEEPA duties.",
+    "Republican note 'keep current tariffs' (CNBC Nov 2026): current = Section 301/232, not IEEPA — wording should say so.",
+    "No explicit baseline effective-tariff figure on the canvas; add 'Current US average tariff 7.1-11.1% (collected vs statutory), as of Jul-Oct 2026'."
+   ],
+   "source_url": "https://budgetlab.yale.edu/research/state-us-tariffs",
+   "as_of": "2026-07-24 / 2026-10",
+   "retrieved": "2026-11-03",
+   "note": "Canvas lines 77-82 checked; not edited."
+  }
+ ]
+}
