@@ -42,11 +42,10 @@ Applied to the page source (`src/simulator.tsx`) and data (`data/*.json`). Party
 - **ECN-23**: grn.dental-medicare hidden from the uncosted estimates block (`pbo_costed: true`).
 - **ECN-24**: Republican tariff note now says the party position is unsourced (CNBC guide has no tariff section).
 - **ECN-25**: long-run charts mark 2056 (end of CBO's window; extrapolation after).
-- **ECN-28 (non-preset part)**: grn.carbon-price now PBO ECR-2025-3365: low -17.5 / central -17.2 / high -15.0 A$bn a year (confidence medium). Not added to the Greens preset; the Parties costing label stays "unsized" until the owner approves.
+- **ECN-28 (non-preset part)**: grn.carbon-price now PBO ECR-2025-3365: low -17.5 / central -17.2 / high -15.0 A$bn a year (confidence medium). Added to the Greens preset in review10 (below).
 - **ECN-29**: grn.rent-freeze 1,100 / 2,000 / 3,100 a household a year.
 - **ECN-P1/P2/P3**: ANU link https://crawford.anu.edu.au/ttpi/research; sectors footnote "agriculture from QCEW"; jump anchor clears the pinned Go to box at 390px.
-- **ECN-05 (code only, dormant)**: optional `ends` (last calendar year per lever) on `Party` and `run()`. No party sets it, so output is unchanged.
-- **Pending owner approval**: ECN-02, ECN-03, ECN-04, ECN-05 values, ECN-28 in the Greens preset.
+- **ECN-05**: the review9 `ends` hook was replaced in review10 by fixed per-lever timing (`sched`, below).
 
 ### Review9 UI fixes (Study Bot usability review, 2026-11-09)
 - **SB-01**: at phone width (under 600px) the Go to menu sits at the top of the page instead of floating over the warning; desktop keeps the pinned bar.
@@ -54,3 +53,19 @@ Applied to the page source (`src/simulator.tsx`) and data (`data/*.json`). Party
 - **SB-03**: one-line definition of r − g on Road to Surplus.
 - **SB-04**: CBO AI report link (https://www.cbo.gov/publication/61147) kept: it matches the report in a search index, but cbo.gov returns 403 to scripted requests, so the empty "cbo.gov" page is CBO's bot block. Not load-verified from the box.
 - "Include every policy again" now shows only when something is excluded or isolated (it was a no-op otherwise).
+
+## Review10 (2026-11-09): approved party preset changes
+Economist review9 items ECN-02, ECN-03, ECN-04, ECN-05 and ECN-28 (Greens preset), approved by the owner. Party presets live only in `src/simulator.tsx` (`PARTIES`, `COSTING`).
+- **ECN-02, US Republicans**: tariff dividend 0.74% of GDP a year in 2027-2031 only (5-year hard cap; the duration setting does not apply), from +0.8 for the duration setting. Status "published (CRFB)", not official, so the Parties table shows 0 of 4 officially costed. "Pre-ruling figure" and "CBO-based reporting" removed; note added: "Conditional on GOP control; condition not met (Nov 2026)", moot from Jan 2027, kept as a historical scenario. The review offered a one-off 3.7% in 2027 or 0.74 x 5 capped; the second is used because 3.7 is outside the spending lever range (-3 to +3).
+- **ECN-03, Coalition**: spending -0.19 / -0.27 / -0.27 / -0.29% of GDP in 2028-29 to 2031-32 and 0 outside; tax 0 / 0 / -0.10 / -0.21 (net of WATO repeal; starts 2030-31), 0 after 2031-32 because the party costing stops there. A financial year sits in the calendar year it ends (2028-29 = engine year 2029; year 1 = 2027). The levers show the averages: spending -0.25, tax -0.08 (was -0.17).
+- **ECN-04, Greens**: new revenue +0.9% of GDP, range +0.55 (gas only) to +1.5, from +1.5. Note: "royalties figure is a state-level estimate; federal mechanism not specified".
+- **ECN-28, Greens**: carbon levy (PBO ECR-2025-3365, central A$17.2bn a year) added as +0.55% of GDP on the tax lever (A$31bn per 1% of GDP). Greens tax lever 1.13 -> 1.08 (-0.37 + 0.9 + 0.55). Parties costing: "Carbon price (PBO 2025, 2025 platform)", official.
+- **ECN-05, fixed timing**: `Party.sched` gives a lever a path by calendar year that overrides the duration setting. In `run()` the lever is split into the scheduled part and any rest (which follows the duration setting); with no schedule the engine is unchanged (tests/engine_r10.js). Used by the Republican dividend and the Coalition savings and tax on the Parties tab and Mix & match, and in the Simulator after "Run <party> in the Simulator" while the lever still equals the party value (a note shows the fixed years).
+- **Not applied, ECN-05 One Nation fuel excise ("halve fuel excise for 3 years")**: the review gives no start or end year and no share of the -0.6% GDP One Nation tax lever, which also holds income splitting, no GST on insurance and the retiree threshold. Needed: the fuel excise part in % of GDP a year and its first year.
+
+## Data refresh (2026-11-09, Economist; verified rows only)
+- **Constants**: US 10-year yield `B.y10` 4.91 -> 4.88 (US Treasury, 9 Nov; the old 4.91% was the 2 Nov reading). `BRENT` futures $98.32 (6 Nov) -> $92.57 (9 Nov settle, January contract; Dow Jones Market Data via Morningstar; Reuters). EIA Brent daily spot $123.10 (27 Oct) -> $107.03 (3 Nov; released 4 Nov; next 12 Nov), now stored once in `BRENT.spot`.
+- **Data rows**: iron ore US$92.9/dmt (Mysteel SEADEX, 9 Nov; SGX figure dropped); ECB deposit rate 2.50% with source ECB Data Portal; UK Bank Rate 4.00% (5 Nov, 8-1; BoE lever hint too); euro-area HICP 4.0% (Oct flash, 4 Nov); China CPI 0.7% (Oct), PPI +5.7%; "Checked" now "9 Nov 2026 (refreshed rows only)". Re-checked and unchanged: RBA 4.85%, AUD 0.6894, US unemployment 4.1% and payrolls +165k, Fed 3.75-4.00%. MPs owning investment properties stays UNVERIFIED.
+- **What changed**: as of "9 Nov 2026 (US close)". Items replaced with the refresh items (midterms House 254-163 with 18 uncalled, Senate 54-44; RBA and Fed; euro-area 4.0%; BoE 4.00% and Norges 4.50%; payrolls; Brent; China; AUD and ASX; 10-year yield; Australian CPI kept). The RBA "18-year high" is kept at the owner's instruction. Upcoming list replaced with 13 dated items (10 Nov to 10 Dec, including ABS Labour Force on 19 Nov). Items render as "<date>: <text>" and move to the past list on their date.
+- **GDP re-base**: estimates.json % of GDP now uses AU A$3,095bn and US $31,902bn (was A$3,020bn and $33,010bn), matching the page's A$31bn and US$0.319tn per 1%. Values recomputed from each item's bn figures (AU shares about 2.4% smaller, US shares about 3.5% larger). Estimates are display-only, so the engine does not move because of the re-base.
+- **Not changed (flag for Economist)**: the engine starting values `B.euPi` 3.8 and `B.cnPi` 0.9 still differ from the refreshed Data rows (4.0% and 0.7%); the refresh lists only `B.y10` and `BRENT` as constants.

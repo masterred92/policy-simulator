@@ -241,13 +241,45 @@
    "us_basis": "CBO FY2026 GDP $31.90tn",
    "note": "estimates.json still converts with its own A$3,020bn / US$33,010bn denominators (Economist to decide whether to align)"
   },
-  "anu_link": "https://crawford.anu.edu.au/ttpi/research",
-  "pending_owner_approval": [
-   "ECN-02",
-   "ECN-03",
-   "ECN-04",
-   "ECN-05 (values; dormant per-lever end-year hook added in code)",
-   "ECN-28 (adding the levy to the Greens preset / Parties costing label)"
-  ]
+  "anu_link": "https://crawford.anu.edu.au/ttpi/research"
+ },
+ "review10": {
+  "date": "2026-11-09",
+  "scope": "Party preset changes from Economist review9, approved by the owner",
+  "items": {
+   "ECN-02": "US Republicans: $5,000 tariff dividend now 0.74% of GDP a year for 2027-2031 only (5-year hard cap, ignores the duration setting), from +0.8 for the duration setting. Status published (CRFB, 10 Sep 2026), not official; 'Pre-ruling figure' and 'CBO-based reporting' removed; note: conditional on GOP control; condition not met (Nov 2026), moot from Jan 2027, kept as a historical scenario. Of the review's two options (one-off 3.7% in 2027, or 0.74 x 5 capped), the second was used because 3.7 is outside the spending lever range (-3 to +3).",
+   "ECN-03": "Coalition: spending path -0.19 / -0.27 / -0.27 / -0.29% of GDP in 2028-29 to 2031-32 (engine years 2029-2032; a financial year sits in the calendar year it ends), 0 outside; tax path 0 / 0 / -0.10 / -0.21 (net of WATO repeal; starts 2030-31), 0 after 2031-32 (outside the party costing). Levers show the averages: spending -0.25, tax -0.08 (from -0.17).",
+   "ECN-04": "Greens new revenue +0.9% of GDP (range +0.55 gas only to +1.5), from +1.5; note: royalties figure is a state-level estimate; federal mechanism not specified.",
+   "ECN-05": "Per-lever fixed timing (Party.sched, calendar-year paths) used for the Republican dividend and the Coalition savings and tax. Applies on the Parties tab, Mix & match and in the Simulator after 'Run <party> in the Simulator' while the lever still equals the party value. One Nation fuel excise not applied: see not_applied.",
+   "ECN-28": "Greens preset: carbon levy PBO ECR-2025-3365 central A$17.2bn a year = +0.55% of GDP on the tax lever (A$31bn per 1%). Greens net tax lever 1.13 -> 1.08 (-0.37 + 0.9 + 0.55). Parties costing: 'Carbon price (PBO 2025, 2025 platform)' official; official tax part 0.18."
+  },
+  "not_applied": {
+   "ECN-05 One Nation fuel excise": "The review names the 3-year fuel excise halving but gives no start or end year for it and no share of the -0.6% GDP One Nation tax lever (which also holds income splitting, no GST on insurance and the retiree threshold). Needed: the fuel excise part in % of GDP a year and its first year."
+  }
+ },
+ "data_refresh_2026_11_09": {
+  "source": "Economist data refresh, 9 Nov 2026 (verified rows only; old/new values as given)",
+  "constants": {
+   "B.y10": "4.91 -> 4.88 (US Treasury, 9 Nov 2026)",
+   "BRENT": "$98.32 (6 Nov) -> $92.57 (9 Nov 2026 settle, Jan contract; Dow Jones Market Data via Morningstar; Reuters)",
+   "BRENT.spot (EIA)": "$123.10 (27 Oct) -> $107.03 (3 Nov 2026; released 4 Nov; next 12 Nov)"
+  },
+  "data_rows": {
+   "US 10y yield": "4.91% (3 Nov, 'Daily briefing data') -> 4.88% (9 Nov 2026, US Treasury daily par yield curve)",
+   "Iron ore": "US$90.55/t, SGX $90.85 -> US$92.9/dmt (Mysteel SEADEX, 9 Nov 2026); SGX figure dropped",
+   "ECB deposit rate": "2.50% unchanged; source FRED -> ECB Data Portal; date 9 Nov 2026",
+   "UK CPI / Bank Rate": "3.5% / 3.75% -> 3.5% / 4.00% (5 Nov 2026, 8-1)",
+   "Euro area GDP / HICP": "1.3% / 3.8% (Sep) -> 1.3% / 4.0% (Oct flash, 4 Nov)",
+   "China GDP / CPI": "4.5% / 0.9% (Sep) -> 4.5% / 0.7% (Oct); PPI +5.7% y/y",
+   "Checked metric": "3 Nov 2026 -> 9 Nov 2026 (refreshed rows only)",
+   "BoE lever hint": "Bank Rate now 3.75% -> 4.00% (5 Nov 2026)",
+   "unchanged (re-checked)": "RBA cash rate 4.85%, AUD/USD 0.6894, US unemployment 4.1% / payrolls +165k, Fed 3.75-4.00%",
+   "unchanged (unverified)": "MPs owning investment properties: still UNVERIFIED"
+  },
+  "what_changed": "asOf '9 Nov 2026 (US close)'; items replaced with the refresh items (midterm tallies House 254-163 with 18 uncalled, Senate 54-44; RBA/Fed; euro-area 4.0%; BoE 4.00% and Norges 4.50%; payrolls; Brent; China CPI/PPI; AUD and ASX; 10-year yield; Australian CPI kept). RBA '18-year high' kept at the owner's instruction. Upcoming list replaced (13 dated items from 10 Nov to 10 Dec, including ABS Labour Force on 19 Nov).",
+  "gdp_rebase": "estimates.json % of GDP re-based to AU A$3,095bn and US $31,902bn (from A$3,020bn and $33,010bn), matching the page's A$31bn and US$0.319tn per 1%. Recomputed from each item's bn figures. Estimates are display-only, so the engine does not move because of this.",
+  "not_applied": {
+   "B.euPi / B.cnPi": "The Data rows now show euro-area HICP 4.0% and China CPI 0.7%, but the refresh lists only B.y10 and BRENT as constants, so the engine starting values B.euPi 3.8 and B.cnPi 0.9 were not changed. Economist to confirm."
+  }
  }
 }

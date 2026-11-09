@@ -100,13 +100,13 @@
    "id": "grn.carbon-price",
    "party": "grn",
    "item": "Carbon price",
-   "status": "unsized (left at baseline, no figure found)",
-   "needs": "low, central, high, unit (% GDP a year), source_url, method, as_of",
+   "status": "official (PBO 2025, 2025 platform); in the Greens preset since review10",
+   "needs": "nothing (sized by PBO ECR-2025-3365)",
    "tab": "Parties: compare all (How much of each platform is costed) + party presets",
    "unit": "% of GDP a year (lever units); reviewer entries in bn/yr need converting",
    "estimates_id": "grn_carbon_price",
    "estimate_verified": true,
-   "displayed": "PBO ECR-2025-3365 range in the estimates block; still left at baseline in the Greens preset (adding it needs owner approval, ECN-28)"
+   "displayed": "PBO ECR-2025-3365 range in the estimates block; in the Greens preset as +0.55% of GDP on the tax lever, and marked official (PBO 2025, 2025 platform) in the Parties costing table (review10, ECN-28)"
   },
   {
    "id": "grn.public-housing",

@@ -11,7 +11,8 @@ An interactive, illustrative model of how US and Australian party policies might
   - `tests/touch.js` – strict real-input test of every control on every tab (target size, not covered, output must change).
   - `tests/round2.js` – checks for the round-2 data fixes (tariff wording, QCEW farm jobs, outside-window label, links).
   - `tests/round3.js` – checks for the review9 fixes (Economist round 3 and Study Bot usability): dated "What changed", refreshed data, household rules, estimates, phone layout, r − g definition, no NaN, no console errors.
-  - `tests/engine_r9.js` – engine regression: every preset and party gives the same output as the round-2 engine (only AUD/USD rescales to the new spot), and the dormant per-item end-year hook stays unset.
+  - `tests/round4.js` – checks for the review10 party preset changes (Republican dividend timing and CRFB label, Coalition timing net of WATO, Greens revenue range and carbon levy, fixed timing in the Simulator), no NaN, no console errors; 390px touch and 1280px click.
+  - `tests/engine_r10.js` – engine regression against the review9 engine (BASE_REF, default b697469, with the refreshed 10-year yield): scenario presets, unchanged parties and the engine with no schedule match exactly; lists what moved for the changed parties, checks the fixed timing and reports the yield refresh's own effect. Replaces `engine_r9.js` (in git history).
 - `data/estimates.json` – estimates for uncosted items, with source, confidence and orientation.
 - `data/data-fixes.json`, `docs/data-fixes.md` – data corrections applied, with sources.
 - `data/uncosted_items.json` – which policies lack an official costing.
@@ -24,6 +25,7 @@ npm run test:presets
 npm run test:merged
 npm run test:round2
 npm run test:round3      # URL=file:///path/to/local/index.html for a local build
+npm run test:round4
 npm run test:engine
 ```
 

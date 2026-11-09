@@ -1,4 +1,4 @@
-// Review9 (Economist round 3) checks. Default target is the live page; set URL=file:///.../index.html for a local build.
+// Review9 (Economist round 3) checks, updated for the 9 Nov 2026 data refresh. Default target is the live page; set URL=file:///.../index.html for a local build.
 // 390px uses touch taps, 1280px mouse clicks. Fails (exit 1) on any missing fix, NaN/undefined text or console error.
 const L=require("./lib");const URL=process.env.URL||"https://us-plus-australia-policy-simulator-bm2t.pages.grok.bot/";
 (async()=>{let fails=0;for(const W of [390,1280]){const touch=W<500;const {b,pg,f}=await L.open(W,900,URL);const errs=[];pg.on("console",m=>{if(m.type()==="error")errs.push(m.text())});pg.on("pageerror",e=>errs.push(String(e)));
@@ -8,7 +8,7 @@ const L=require("./lib");const URL=process.env.URL||"https://us-plus-australia-p
  const txt=()=>f.evaluate(()=>document.body.innerText+" "+[...document.querySelectorAll("a")].map(a=>a.href).join(" "));
  const res={};const ok=(k,v)=>{res[k]=v;if(!v)fails++;};
  await f.evaluate(()=>{[...document.querySelectorAll('button[aria-expanded="false"]')].forEach(b=>b.click());[...document.querySelectorAll("h2")].filter(h=>/^▸/.test(h.textContent)).forEach(h=>h.click());});await L.w(400);
- let t=await txt();ok("what changed as-of 9 Nov, never today",/What changed \(as of 9 Nov 2026\)/.test(t)&&!/What changed today/.test(t)&&/was scheduled for 4 Nov 2026/.test(t)&&/Democrats won both chambers/.test(t)&&/98\.32/.test(t));
+ let t=await txt();ok("what changed as-of 9 Nov, never today",/What changed, as of 9 Nov 2026 \(US close\)/.test(t)&&!/What changed today/.test(t)&&/19 Nov 2026: ABS Labour Force, October 2026/.test(t)&&/called both chambers for the Democrats/.test(t)&&/House 254 Democrats to 163/.test(t)&&/92\.57/.test(t)&&/an 18-year high/.test(t));
  const warn=await f.evaluate(()=>{window.scrollTo(0,0);const el=[...document.querySelectorAll("div,aside,section,p")].filter(e=>/^Educational toy, not a forecast/.test(e.innerText||"")).pop();if(!el)return "missing";const r=el.getBoundingClientRect();const pts=[[r.left+8,r.top+8],[r.right-8,r.top+8],[r.left+r.width/2,r.top+r.height/2]];return pts.every(([x,y])=>{const h=document.elementFromPoint(x,y);return h&&(el.contains(h)||h.contains(el))})?"clear":"covered";});
  ok("SB-01 warning not covered",warn==="clear");
  ok("scoreboard AUD now 0.689",/Now 0\.689/.test(t));
@@ -16,6 +16,7 @@ const L=require("./lib");const URL=process.env.URL||"https://us-plus-australia-p
  await tap(btn("Oil collapse"));t=await txt();ok("oil collapse explains volatility",/volatility penalty/.test(t));
  await L.go(f,"Road to Surplus");t=await txt();ok("SB-03 r − g defined",/r − g: the interest rate on government debt minus the economy's growth rate/.test(t));
  await L.go(f,"Data & sources");t=await txt();ok("data rows refreshed",/0\.6894/.test(t)&&/4\.3% y\/y/.test(t)&&/pre-IEEPA ruling/.test(t)&&/agriculture from QCEW/.test(t));
+ ok("data refresh 9 Nov rows",/4\.88%/.test(t)&&/\$107\.03/.test(t)&&/US\$92\.9\/dmt/.test(t)&&/3\.5% \/ 4\.00%/.test(t)&&/1\.3% \/ 4\.0% \(Oct flash\)/.test(t)&&/4\.5% \/ 0\.7% \(Oct\)/.test(t)&&/ECB Data Portal/.test(t)&&/9 Nov 2026 \(refreshed rows only\)/.test(t)&&!/SGX futures/.test(t)&&!/\$123\.10/.test(t));
  await L.go(f,"Parties: compare all");await tap(btn("US Republicans"));t=await txt();ok("rep tariff note unsourced",/Party position unsourced/.test(t));
  await tap(btn("Greens"));t=await f.evaluate(()=>document.querySelector("[data-estimates]")?.innerText||"");ok("carbon levy PBO figure",/-17\.2/.test(t)||!/carbon/i.test(t));
  await L.go(f,"Australian household by party");await L.w(500);t=await txt();
