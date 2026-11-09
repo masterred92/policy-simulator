@@ -8,6 +8,10 @@ An interactive, illustrative model of how US and Australian party policies might
 - `src/simulator.tsx` – the full page (all tabs, model, data tables, estimates display).
 - `src/kit-mock.tsx` – a minimal local stand-in for the page UI kit, used to bundle and test offline.
 - `tests/` – Puppeteer tests: tap tests at 390px (touch) and click tests at 1280px (mouse) for every control, presets, estimate switchers, NaN checks and console errors.
+  - `tests/touch.js` – strict real-input test of every control on every tab (target size, not covered, output must change).
+  - `tests/round2.js` – checks for the round-2 data fixes (tariff wording, QCEW farm jobs, outside-window label, links).
+  - `tests/round3.js` – checks for the review9 fixes (Economist round 3 and Study Bot usability): dated "What changed", refreshed data, household rules, estimates, phone layout, r − g definition, no NaN, no console errors.
+  - `tests/engine_r9.js` – engine regression: every preset and party gives the same output as the round-2 engine (only AUD/USD rescales to the new spot), and the dormant per-item end-year hook stays unset.
 - `data/estimates.json` – estimates for uncosted items, with source, confidence and orientation.
 - `data/data-fixes.json`, `docs/data-fixes.md` – data corrections applied, with sources.
 - `data/uncosted_items.json` – which policies lack an official costing.
@@ -18,6 +22,9 @@ npm install
 CHROME=/path/to/chrome npm test     # touch.js, every tab at 390px and 1280px
 npm run test:presets
 npm run test:merged
+npm run test:round2
+npm run test:round3      # URL=file:///path/to/local/index.html for a local build
+npm run test:engine
 ```
 
 ## Data sources

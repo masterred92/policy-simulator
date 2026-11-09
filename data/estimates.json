@@ -19,7 +19,8 @@
    "Update 13:30: defence, migration, rent CPI verified; carbon levy PBO figure still not retrievable; retiree threshold & duplication: no costing exists."
   ],
   "date_updated": "2026-11-03",
-  "round2_note": "2026-11-03: 4 program sizes now primary sources; rent freeze median verified."
+  "round2_note": "2026-11-03: 4 program sizes now primary sources; rent freeze median verified.",
+  "review9_note": "2026-11-09 (Economist review9): grn.carbon-price now PBO ECR-2025-3365; grn.rent-freeze 1,100/2,000/3,100; grn.dental-medicare flagged PBO-costed and hidden from the uncosted block."
  },
  "estimates": [
   {
@@ -285,31 +286,40 @@
    "item_id": "grn.carbon-price",
    "page": "sim",
    "label": "Greens: carbon price ($100/t levy on facilities ≥25kt) (estimate)",
-   "type": "projected",
-   "source_url": "https://www.dcceew.gov.au/sites/default/files/documents/quarterly-update-australias-national-greenhouse-gas-inventory-dec-2025.pdf",
-   "orientation": "DCCEEW (official data)",
-   "method": "PBO costed ECR-2025-3365 but its figure could not be retrieved (search summary claimed ~$10.8bn over a decade — unconfirmed, treat as unverified). Greens 2025 policy PDF gives no figure. Projection kept: 458.9 Mt × 25-55% covered × $100/t less abatement; true PBO figure may be far lower if covered emissions fall fast.",
-   "as_of": "2025-12 (inventory)",
-   "retrieved": "2026-11-03",
-   "confidence": "very low",
+   "type": "published",
+   "source_url": "https://www.pbo.gov.au/elections/2025-general-election/2025-election-commitments-costings/powering-past-coal-and-gas-make-polluters-pay-damage-they-are-doing",
+   "orientation": "PBO (independent, official): ECR-2025-3365, standalone costing before interactions (ECR-2025-3901)",
+   "method": "PBO ECR-2025-3365 (Greens 2025, $100/t on emitters >=25kt): UCB +$63.0bn over 2025-26 to 2028-29 (11.54 / 16.76 / 17.22 / 17.47 $bn); +$176.1bn to 2035-36 ($14.98bn in 2035-36). Standalone, before ECR-2025-3901 interactions. Low = 2028-29 peak; central = average 2026-27 to 2028-29; high = 2035-36 tail. The earlier '$10.8bn/decade' snippet was wrong. Not added to the Greens preset (needs owner approval, ECN-28).",
+   "as_of": "2025-05 (PBO ECR-2025-3365)",
+   "retrieved": "2026-11-09",
+   "confidence": "medium",
    "estimate": true,
    "is_program_size": false,
-   "low": -0.828,
-   "central": -0.596,
-   "high": -0.033,
+   "low": -0.579,
+   "central": -0.57,
+   "high": -0.497,
    "unit": "% GDP/yr",
-   "low_bn": -25,
-   "central_bn": -18,
-   "high_bn": -1,
+   "low_bn": -17.5,
+   "central_bn": -17.2,
+   "high_bn": -15.0,
    "bn_unit": "AUD bn/yr",
    "unit_basis": "Annual budget effect; % of nominal GDP (AU 2026-27 ≈A$3,020bn: ABS/Treasury 2025-26 ≈A$2.90tn × Budget 4¼% nominal growth). + = cost to budget, - = saving or revenue. low = most negative.",
    "previous": {
-    "low": -23,
-    "central": -12,
-    "high": -5,
-    "unit": "AUD bn/yr (+ = cost to budget, - = saving)"
+    "low": -0.828,
+    "central": -0.596,
+    "high": -0.033,
+    "unit": "% GDP/yr",
+    "bn": [
+     -25,
+     -18,
+     -1
+    ]
    },
-   "changed": true
+   "changed": true,
+   "secondary_urls": [
+    "https://web.archive.org/web/20250624140247/https://www.pbo.gov.au/sites/default/files/2025-05/PBO-ECR-2025-3365-Powering%20past%20coal%20and%20gas%20-%20Make%20the%20polluters%20pay%20for%20the%20damage%20they%20are%20doing.pdf"
+   ],
+   "review9": "ECN-28 (non-preset part): placeholder replaced with PBO figures; % GDP uses this file's A$3,020bn denominator"
   },
   {
    "id": "grn.public-housing",
@@ -759,23 +769,23 @@
    "label": "Greens: rent freeze (household saving) (estimate)",
    "type": "projected",
    "source_url": "https://www.abs.gov.au/media-centre/media-releases/cpi-rose-43-year-september-2026",
-   "orientation": "n/a",
-   "method": "Household saving ≈ forgone rent rises: ABS CPI rents +3.6% yr to Sep qtr 2026 × median rent (not fetched; ~A$30k/yr assumed) over 2-yr freeze → ~$1,100/yr first year, ~$2,200 second. Range 0-3,000. Median rent $713/wk (Cotality, Sep qtr 2026, +5.5% y/y): a freeze forgoing one year's growth ≈ $39/wk ≈ $2,040/yr per renting household at the median.",
+   "orientation": "Cotality (industry data): median rent $713/wk (Sep 2026) x rent growth avoided over a 2-year freeze: 2.0% (Cotality Sep qtr annualised), 3.6% (ABS CPI rents), 5.5% (Cotality y/y). $0 for tenants whose rent would not have risen; rents are a state power",
+   "method": "Base = Cotality national median rent $713/wk (Sep 2026, released 9 Oct 2026) x 52 = $37,076/yr. Saving = base x rent growth avoided; 2-year freeze average = base x [g + ((1+g)^2 - 1)] / 2. g = 2.0% (Cotality Sep-qtr +0.5% annualised; vacancy 2.1%) -> ~$1,120; 3.6% (ABS CPI rents y/y Sep 2026) -> ~$2,030; 5.5% (Cotality y/y) -> ~$3,115. Rounded 1,100 / 2,000 / 3,100. $0 for tenants whose rent would not have risen; rents are a state power, so federal implementation is uncertain. An estimate, not a costing.",
    "as_of": "2026-09 qtr",
-   "retrieved": "2026-11-03 (rent CPI only; median rent not verified)",
+   "retrieved": "2026-11-09",
    "confidence": "low",
    "estimate": true,
    "is_program_size": false,
-   "low": 0,
-   "central": 1100,
-   "high": 3000,
+   "low": 1100,
+   "central": 2000,
+   "high": 3100,
    "unit": "AUD per household/yr",
    "unit_basis": "Per household per year, not a budget figure; + = household better off. Never add to budget totals.",
    "previous": {
     "low": 0,
-    "central": 1500,
-    "high": 4000,
-    "unit": "AUD per renting household per yr (saving)"
+    "central": 1100,
+    "high": 3000,
+    "unit": "AUD per household/yr"
    },
    "changed": true,
    "policy_source_url": "https://greens.org.au/news/media-release/housing-battle-lines-drawn-labor-tinkers-while-prices-soar-dutton-sends-prices",
@@ -787,7 +797,8 @@
     "source_url": "https://www.cotality.com/au/insights/articles/rental-growth-loses-momentum-as-vacancy-rates-rise",
     "retrieved": "2026-11-03",
     "alt": "REA Group advertised median $675/wk Sep 2026"
-   }
+   },
+   "review9": "ECN-29: 0 / 1,100 / 3,000 -> 1,100 / 2,000 / 3,100"
   },
   {
    "id": "grn.dental-medicare",
@@ -814,7 +825,10 @@
     "high": 12,
     "unit": "AUD bn/yr (+ = cost to budget, - = saving)"
    },
-   "changed": true
+   "changed": true,
+   "pbo_costed": true,
+   "show_in_estimates": false,
+   "review9": "ECN-23: PBO-costed nationally, so removed from the uncosted estimates block on the page; listed under Policies by party as PBO-costed nationally"
   },
   {
    "id": "haines.regional",

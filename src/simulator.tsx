@@ -21,7 +21,7 @@ const PRESETS: { name: string; lv: Lv }[] = [
 ];
 
 // ---------- Party presets: built only from each party's own stated proposals ----------
-type Party = { id: string; name: string; country: "US" | "AU"; color: string; lv: Lv; notes: [string, string, string][] };
+type Party = { id: string; name: string; country: "US" | "AU"; color: string; lv: Lv; notes: [string, string, string][]; ends?: Partial<Record<keyof Lv, number>> }; // ends: optional last calendar year a lever stays on (fixed-length items, ECN-05). Unset for every party until approved, so the global duration applies.
 // Costing status of each stated item: official = CBO/PBO-based; published = outside estimate; party = the party's own figure; page = this Page's estimate; unsized = no figure found (left at baseline)
 type CItem = [string, "official" | "published" | "party" | "page" | "unsized"];
 const COSTING: Record<string, { items: CItem[]; off: Partial<Lv> }> = {
@@ -35,7 +35,7 @@ const COSTING: Record<string, { items: CItem[]; off: Partial<Lv> }> = {
 const AI_SC: { name: string; lv: Lv; basis: string }[] = [
   { name: "Slow AI", lv: { ...ZERO, aiProd: 0.07 }, basis: "Acemoglu (2024): about 0.7% more productivity over 10 years in total" },
   { name: "Middle AI", lv: { ...ZERO, aiProd: 0.4 }, basis: "McKinsey (2023) generative-AI range 0.1 to 0.6 pts a year; Penn Wharton: GDP 1.5% higher by 2035" },
-  { name: "AI boom", lv: { ...ZERO, aiProd: 1.5 }, basis: "Most optimistic published estimate: Goldman Sachs (Briggs & Kodnani, Mar 2023), about 1.5 pts a year of labour productivity over about 10 years, starting gradually" },
+  { name: "AI boom", lv: { ...ZERO, aiProd: 1.5 }, basis: "Among the higher published estimates: Goldman Sachs (Briggs & Kodnani, Mar 2023), about 1.5 pts a year of labour productivity over about 10 years, starting gradually" },
   { name: "AI boom + job disruption", lv: { ...ZERO, aiProd: 1.5, aiJobs: 2.5 }, basis: "Same boom, plus a 2.5-pt temporary jobless rise. The jobless size is illustrative: no published estimate found (IMF SDN/2024/001 reports exposure, about 60% of jobs in advanced economies, not job losses)" },
 ];
 
@@ -44,7 +44,7 @@ const AI_LIT: [string, string, string, string][] = [
   ["Acemoglu, NBER WP 32487 (2024)", "Total factor productivity, about 0.7% in total", "10 years", "under 0.1 pts a year (lowest)"],
   ["Penn Wharton Budget Model (Sep 2025)", "GDP level about 1.5% higher by 2035", "about 10 years", "about 0.15 pts a year"],
   ["McKinsey (Jun 2023)", "Labour productivity from generative AI", "to 2040", "0.1 to 0.6 pts a year"],
-  ["Goldman Sachs, Briggs & Kodnani (Mar 2023)", "Labour productivity with wide adoption", "about 10 years, starting gradually", "about 1.5 pts a year (most optimistic published estimate)"],
+  ["Goldman Sachs, Briggs & Kodnani (Mar 2023)", "Labour productivity with wide adoption", "about 10 years, starting gradually", "about 1.5 pts a year (among the higher published estimates)"],
   ["IMF SDN/2024/001 (Jan 2024)", "Share of jobs exposed (not a growth figure)", "n/a", "about 40% of jobs worldwide, 60% in advanced economies"],
   ["CBO (Dec 2024)", "Not in the budget baseline", "n/a", "No number: size judged too uncertain"],
 ];
@@ -52,7 +52,7 @@ const AI_LIT: [string, string, string, string][] = [
 // Debt payoff: constant primary surplus needed to reach zero debt in N years
 const DEBTS = [
   { id: "usp", name: "US debt held by public", d: 101, r: 3.4, g: 4.0, prim: -2.6 },
-  { id: "usg", name: "US gross debt", d: 124, r: 3.4, g: 4.0, prim: -2.6 },
+  { id: "usg", name: "US gross debt (CBO FY2026 est. 123.6%)", d: 124, r: 3.4, g: 4.0, prim: -2.6 },
   { id: "aun", name: "Australia net debt", d: 19.9, r: 4.0, g: 4.75, prim: -0.6 },
   { id: "aug", name: "Australia gross debt", d: 34, r: 4.0, g: 4.75, prim: -0.6 },
 ];
@@ -70,7 +70,7 @@ const LIFE: { name: string; what: string; evidence: string; cost: string; fit: s
 
 const PARTIES: Party[] = [
   { id: "rep", name: "US Republicans", country: "US", color: "#D62828", lv: { ...ZERO, usSpend: 0.8 }, notes: [
-    ["Tariffs", "No change (0)", "Party leaders back keeping current tariffs: Section 232 product tariffs and the Section 301 forced-labour tariffs that replaced the expired Section 122 surcharge (IEEPA tariffs struck down 20 Feb 2026). No new across-the-board rate stated. Source: CNBC midterm guide, Nov 2026."],
+    ["Tariffs", "No change (0)", "Party leaders back keeping current tariffs: Section 232 product tariffs and the Section 301 forced-labour tariffs that replaced the expired Section 122 surcharge (IEEPA tariffs struck down 20 Feb 2026). No new across-the-board rate stated. Party position unsourced: the CNBC midterm guide (updated 27 Oct 2026) has no tariff section."],
     ["Taxes", "No change (0)", "Main tax plan (One Big Beautiful Bill Act, 2025) is already law, so it is in CBO's baseline; further cuts mentioned without a size."],
     ["Spending", "+0.8% GDP/yr", "Proposed $5,000 adult tariff dividend, about $1.2 trillion once (about 3.7% of GDP), spread over 5 years. Cost per CBO-based reporting. Pre-ruling figure: the IEEPA duties meant to fund it were struck down on 20 Feb 2026 (Learning Resources v. Trump) and refunds are owed, so the revenue base is smaller. Kept as published, not re-estimated."],
     ["Fed / other", "Not set", "Deregulation and energy-supply plans have no costed size; central bank is independent."]] },
@@ -102,11 +102,11 @@ const PARTIES: Party[] = [
 type Pkg = { name: string; spend: number; rev: number; who: string };
 type Ctry = { id: string; name: string; debt: number; prim: number; drift: number; r: number; g: number; phase: number; base: string; pkgs: Pkg[]; verdict: string };
 const FISCAL: Ctry[] = [
-  { id: "US", name: "US", debt: 101, prim: 2.6, drift: 0.01, r: 3.4, g: 4.0, phase: 10, base: "CBO Feb 2026: deficit 5.8% of GDP, debt 101%, primary deficit 2.6%", pkgs: [
+  { id: "US", name: "US", debt: 101, prim: 2.6, drift: 0.01, r: 3.4, g: 4.0, phase: 10, base: "CBO Feb 2026 baseline, pre-IEEPA ruling: deficit 5.8% of GDP, debt 101%, primary deficit 2.6%. Later figures (secondary reports, cbo.gov not opened): CBO's Aug 2026 update adds about $0.9tn to 2027-36 deficits; the FY2026 actual deficit was $1.993tn, about 6.2% of GDP (Monthly Budget Review, 8 Oct 2026)", pkgs: [
     { name: "Mostly spending", spend: 4, rev: 1.5, who: "Retirees and providers (slower Social Security/Medicare growth, CBO options), federal agencies and grantees, some defense; a small tax-base broadening." },
     { name: "Mostly revenue", spend: 1.5, rev: 4, who: "Higher earners and firms (top rates, payroll tax cap, CBO/JCT options) and consumers if a carbon tax or VAT is used." },
     { name: "Balanced", spend: 2.75, rev: 2.75, who: "Spread across retirees, agencies, higher earners and consumers, in line with CRFB-style plans." }],
-    verdict: "Possible on paper, very hard in practice. It needs about 5.5% of GDP (about $1.7 trillion a year today), which would be the largest deliberate peacetime consolidation on record. Bigger falls in the deficit have happened when wartime or emergency spending ended (after 1945; FY2020 to FY2022), per OMB Historical Tables 1.2. Higher interest rates push surplus past 20 years." },
+    verdict: "Possible on paper, very hard in practice. It needs about 5.5% of GDP (about $1.7 trillion a year today), which would be rare for a deliberate peacetime consolidation. Bigger falls in the deficit have happened when wartime or emergency spending ended (after 1945; FY2020 to FY2022), per OMB Historical Tables 1.2. Higher interest rates push surplus past 20 years." },
   { id: "AU", name: "Australia", debt: 19.9, prim: 0.6, drift: 0.05, r: 4.0, g: 4.75, phase: 6, base: "2026-27 Budget (12 May 2026): deficit $31.5bn (about 1% of GDP); net debt 19.9% of GDP at 30 Jun 2027 (Budget Paper No. 1; net debt, not gross 34.0%); IGR ageing pressure", pkgs: [
     { name: "Mostly spending", spend: 1.5, rev: 0.5, who: "Program and grant recipients, NDIS growth, public service; small bracket-creep tax take." },
     { name: "Mostly revenue", spend: 0.5, rev: 1.5, who: "Resource firms (royalties or gas tax), property investors (negative gearing/CGT), or all consumers if GST rises." },
@@ -162,8 +162,10 @@ function fiscal(c: Ctry, spend: number, rev: number, k: number, dr: number, N: n
   return { def, debt };
 }
 
-// Latest official readings (fetched 3 Nov 2026) used as the "no change" starting point
-const B = { usG: 3.4, usPi: 3.7, usU: 4.2, def: 5.8, debt: 101, y10: 4.91, auG: 2.1, auPi: 3.9, auU: 4.7, aud: 0.7038, auDebt: 19.9, auDef: 1.0, fed: 3.88, rba: 4.85,
+// Latest official readings used as the "no change" starting point (fetched 3 Nov 2026; AUD/USD and US unemployment refreshed 9 Nov 2026, review9)
+// Brent: January futures settle, 6 Nov 2026 (Reuters/Euronext; CNBC). Used by the oil hint, Data & sources and the Mix scorecard.
+const BRENT = { usd: 98.32, date: "6 Nov 2026" };
+const B = { usG: 3.4, usPi: 3.7, usU: 4.1, def: 5.8, debt: 101, y10: 4.91, auG: 2.1, auPi: 3.9, auU: 4.7, aud: 0.6894, auDebt: 19.9, auDef: 1.0, fed: 3.88, rba: 4.85,
   cnG: 4.5, cnPi: 0.9, jpG: 1.4, jpPi: 2.1, euG: 1.3, euPi: 3.8, ukG: 1.0, ukPi: 3.5, cny: 6.654, jpy: 157.5 };
 // Year-1 (2027) calibration anchor: the no-change path starts at the average of official 2027 forecasts, then reverts to the long-run anchors.
 // US growth: CBO Feb 2026 1.8, IMF WEO Oct 2026 2.3, OECD Sep 2026 2.1. US CPI: CBO PCE 2.3 plus the usual 0.4 CPI-PCE gap. US jobless: CBO 4.5.
@@ -175,10 +177,15 @@ const LR = { usG: 2.0, auG: 2.2, usPi: 2.5, auPi: 2.75, usU: 4.2, auU: 4.5, fed:
 
 type Out = Record<string, number[]>;
 const KEYS = ["usG", "usPi", "usU", "def", "debt", "y10", "auG", "auPi", "auU", "aud", "spx", "asx", "cnG", "cnPi", "jpG", "jpPi", "euG", "euPi", "ukG", "ukPi", "jpy", "auDef", "auDebt", "fedR", "rbaR", "aiG", "usRe", "auRe", "usPL", "auGpc", "auRent"];
-function run(l: Lv, k: number, react: boolean, N: number = 5, dur: number = 10): Out {
+function run(l: Lv, k: number, react: boolean, N: number = 5, dur: number = 10, ends?: Partial<Record<keyof Lv, number>>): Out {
   // dur = years budget and tariff changes stay in place (Infinity = permanent), then phased out over 5 years (no cliff)
   const ON = (t: number) => clamp((dur + 5 - t) / 5, 0, 1);
   const IMP = (t: number) => { let s = 0; for (let j = 0; j <= t; j++) s += (ON(j) - (j > 0 ? ON(j - 1) : 0)) * FADE(t - j); return s; };
+  // Optional per-lever end year (calendar year, year 1 = 2027). With no ends the exact ON and IMP above are used, so output is unchanged.
+  const onF = (key: keyof Lv): ((t: number) => number) => { const y = ends ? ends[key] : undefined; return y === undefined ? ON : (t: number) => (2027 + t <= y ? 1 : 0); };
+  const impF = (key: keyof Lv): ((t: number) => number) => { const f = onF(key); return f === ON ? IMP : (t: number) => { let s = 0; for (let j = 0; j <= t; j++) s += (f(j) - (j > 0 ? f(j - 1) : 0)) * FADE(t - j); return s; }; };
+  const onTar = onF("tariff"), onUS = onF("usSpend"), onUT = onF("usTax"), onAS = onF("auSpend"), onAT = onF("auTax");
+  const impUS = impF("usSpend"), impUT = impF("usTax"), impAS = impF("auSpend"), impAT = impF("auTax");
   const o: Out = {}; KEYS.forEach((x: string) => { o[x] = []; });
   let aiFis = 0, aiLvl = 0, aiJc = 0, auDebt = B.auDebt, debt = B.debt, usU = C1.usU, auU = C1.auU, spx = 0, asx = 0, fedX = 0, rbaX = 0, usRe = LR.usR, auRe = LR.auR, prevRamp = 0, tarLvP = 0, hg = 0;
   const ka = k === 1 ? 1 : k < 1 ? 0.15 : 2.5, kj = k === 1 ? 1 : k < 1 ? 0.3 : 1.8;
@@ -186,7 +193,7 @@ function run(l: Lv, k: number, react: boolean, N: number = 5, dur: number = 10):
   const cpp = k === 1 ? 0.1 : k < 1 ? -0.1 : 0.25;          // per-person GDP effect per point of migration-driven growth (contested; PC 2016)
   const erent = k === 1 ? 1.75 : k < 1 ? 1.0 : 2.5;         // rents % per 1% more people than homes
   for (let t = 0; t < N; t++) {
-    const fed = l.fed * HOLD(t) + fedX, rba = l.rba * HOLD(t) + rbaX, tar = l.tariff / 10 * ON(t), oil = l.oil / 10, sh = SHOCK(t);
+    const fed = l.fed * HOLD(t) + fedX, rba = l.rba * HOLD(t) + rbaX, tar = l.tariff / 10 * onTar(t), oil = l.oil / 10, sh = SHOCK(t);
     const boj = l.boj * HOLD(t), ecb = l.ecb * HOLD(t), boe = l.boe * HOLD(t);
     const usBase = toward(C1.usG, LR.usG, t, 0.4), auBase = toward(C1.auG, LR.auG, t, 0.4);
     const usPiB = toward(C1.usPi, LR.usPi, t, 0.4), auPiB = toward(C1.auPi, LR.auPi, t, 0.4);
@@ -210,16 +217,16 @@ function run(l: Lv, k: number, react: boolean, N: number = 5, dur: number = 10):
     const yenPct = 4 * k * (boj - fed) * (t === 0 ? 1 : 0.6);   // + = yen stronger
     const jpPi = toward(B.jpPi, LR.jpPi, t, 0.4) + 0.2 * oil * sh - 0.03 * yenPct * sh + 0.3 * jpGap;
     const carry = Math.max(0, yenPct - 3) * sh;                    // sharp yen rise forces carry-trade selling
-    const auOwn = 0.8 * k * l.auSpend * IMP(t) - 0.4 * k * l.auTax * IMP(t) + migr; // Australian domestic impulse, for spillovers to the US and the AUD
+    const auOwn = 0.8 * k * l.auSpend * impAS(t) - 0.4 * k * l.auTax * impAT(t) + migr; // Australian domestic impulse, for spillovers to the US and the AUD
     // United States
-    const usDem = 0.02 * auOwn + 1.0 * k * l.usSpend * IMP(t) - 0.5 * k * l.usTax * IMP(t) - 0.5 * k * fed * LAG(t)
+    const usDem = 0.02 * auOwn + 1.0 * k * l.usSpend * impUS(t) - 0.5 * k * l.usTax * impUT(t) - 0.5 * k * fed * LAG(t)
       - 0.25 * k * tar * (0.3 + 0.7 * sh) * (t < 10 ? 1 : 0.3) - 0.05 * k * oil * sh
       + 0.1 * cnGap + 0.15 * euGap + 0.05 * ukGap + 0.05 * jpGap - 0.1 * carry;
     const usG = usBase + usDem + aiG;
-    const tarLv = 0.8 * (l.tariff / 10) * ON(t) * (1 - Math.pow(0.5, t + 1)); const tarPi = tarLv - tarLvP; tarLvP = tarLv; // price LEVEL stays up while the tariff lasts; only inflation fades
+    const tarLv = 0.8 * (l.tariff / 10) * onTar(t) * (1 - Math.pow(0.5, t + 1)); const tarPi = tarLv - tarLvP; tarLvP = tarLv; // price LEVEL stays up while the tariff lasts; only inflation fades
     const usPi = usPiB - 0.6 * aiG + tarPi + 0.3 * usDem + 0.2 * oil * sh - 0.25 * k * fed * LAG(t + 1);
     usU = usU - 0.5 * usDem + aiJ; usU = usU + 0.3 * (LR.usU + 0.5 * aiJc - usU);
-    const usPrim = LR.usPrim + Math.min(1.0, 0.03 * t) - 0.2 * aiFis + 0.3 * aiJc + (l.usSpend - l.usTax * (t < 1 ? 1 : 0.9)) * ON(t) - 0.45 * tar - 0.3 * usDem;
+    const usPrim = LR.usPrim + Math.min(1.0, 0.03 * t) - 0.2 * aiFis + 0.3 * aiJc + (ends ? l.usSpend * onUS(t) - l.usTax * (t < 1 ? 1 : 0.9) * onUT(t) : (l.usSpend - l.usTax * (t < 1 ? 1 : 0.9)) * ON(t)) - 0.45 * tar - 0.3 * usDem;
     const y10 = clamp(y10B + 0.5 * fed + 0.2 * (usPi - usPiB) + clamp(0.02 * (debt - B.debt), -1, 2.5) + 0.1 * boj + 0.5 * aiG, 0.5, 12); // faster productivity raises rates, offsetting part of the budget gain
     usRe = usRe + 0.15 * (0.5 * (fedB + fed) + 0.5 * y10 - usRe);           // debt rolls over gradually into new rates
     const prevDebt = debt; debt = debtStep(debt, usPrim, usRe, usG + usPi);
@@ -228,7 +235,7 @@ function run(l: Lv, k: number, react: boolean, N: number = 5, dur: number = 10):
     const ore = (l.china + 5 * l.pboc) * sh;
     const audPct = 0.4 * k * ore + 3 * (rba - fed) - tar * sh - 2 * carry + 0.03 * l.oil * sh + 1.0 * auOwn;
     const aud = B.aud * (1 + audPct / 100);
-    const auDem = 0.8 * k * l.auSpend * IMP(t) - 0.4 * k * l.auTax * IMP(t) - 0.4 * k * rba * LAG(t)
+    const auDem = 0.8 * k * l.auSpend * impAS(t) - 0.4 * k * l.auTax * impAT(t) - 0.4 * k * rba * LAG(t)
       + 0.2 * (usG - usBase - aiG) + 0.3 * k * cnGap + 0.05 * euGap + 0.1 * jpGap - 0.1 * tar * sh - 0.03 * oil * sh;
     const auG = auBase + migr + 0.8 * aiG + auDem;
     const auPi = auPiB - 0.5 * aiG + 0.3 * auDem - 0.3 * k * rba * LAG(t + 1) - 0.05 * audPct * sh + 0.2 * oil * sh;
@@ -243,7 +250,7 @@ function run(l: Lv, k: number, react: boolean, N: number = 5, dur: number = 10):
     const au10 = (rbaB + rba) * 0.5 + 2.3;
     auRe = auRe + 0.15 * (0.5 * (rbaB + rba) + 0.5 * au10 - auRe);
     const migLvl = l.auPop * Math.min(3, t + 1); // lost workers and taxpayers: a level loss built over 3 years, then permanent
-    const auPrim = LR.auPrim + Math.min(0.5, 0.02 * t) - 0.35 * km * migLvl - 0.15 * aiFis + 0.3 * aiJc + (l.auSpend - 0.9 * l.auTax) * ON(t) - 0.3 * auDem;
+    const auPrim = LR.auPrim + Math.min(0.5, 0.02 * t) - 0.35 * km * migLvl - 0.15 * aiFis + 0.3 * aiJc + (ends ? l.auSpend * onAS(t) - 0.9 * l.auTax * onAT(t) : (l.auSpend - 0.9 * l.auTax) * ON(t)) - 0.3 * auDem;
     const prevAu = auDebt; auDebt = debtStep(auDebt, auPrim, auRe, auG + auPi);
     const auDef = auPrim + auRe * prevAu / 100;
     hg = 0.8 * hg + (1 - cpp) * migr; // extra people relative to homes; supply catches up about 20% a year
@@ -278,7 +285,7 @@ const GROUPS: { name: string; levers: L[] }[] = [
     { key: "aiProd", label: "AI productivity boost", min: 0, max: 2, step: 0.05, unit: " pts/yr", hint: "Extra growth per year once adopted: 0.07 Acemoglu, 1.5 Goldman Sachs" },
     { key: "aiJobs", label: "AI job disruption", min: 0, max: 4, step: 0.25, unit: " pts", hint: "Temporary rise in unemployment as jobs shift" }] },
   { name: "Global", levers: [
-    { key: "oil", label: "Oil price change", min: -50, max: 80, step: 5, unit: "%", hint: "Brent futures settled at $104.77 on 2 Nov (CNBC); EIA daily spot $123.10 on 27 Oct" }] },
+    { key: "oil", label: "Oil price change", min: -50, max: 80, step: 5, unit: "%", hint: `Brent futures settled at $${BRENT.usd} on ${BRENT.date} (Reuters/Euronext; CNBC); EIA daily spot $123.10 on 27 Oct` }] },
 ];
 
 // ---------- European economies (own levers; spill-ins from the main model) ----------
@@ -391,14 +398,14 @@ function PolicyCompare({ aName, bName, colA, colB, rows }: { aName: string; bNam
 // ===== Starting data: [measure, value, published (YYYY-MM-DD), period, source] =====
 type DRow = [string, string, string, string, string];
 const DATA: DRow[] = [
-  ["US GDP growth", "3.4% (annualised)", "2026-10-29", "Q3 2026", "BEA via FRED"], ["US CPI inflation", "3.7%", "2026-10-15", "Sep 2026", "BLS via FRED"], ["US unemployment", "4.2%", "2026-10-02", "Sep 2026", "BLS via FRED"],
-  ["Fed funds (effective)", "3.88%", "2026-11-02", "Oct 2026", "FRED"], ["US 10y yield", "4.91%", "2026-11-03", "3 Nov 2026", "Daily briefing data"], ["US deficit", "5.8% GDP", "2026-02-11", "FY2026 est.", "CBO"],
-  ["US debt held by public", "101% GDP", "2026-02-11", "FY2026 est.", "CBO"], ["US gross debt", "121% GDP ($39.5T)", "2026-09-25", "Q2 2026", "FRED / Treasury"], ["US debt held by public, 2055 benchmark", "171.8% GDP (2055); 175.1% (2056)", "2026-02-11", "2055 and 2056 projections", "CBO Feb 2026 extended baseline (Budget and Economic Outlook 2026 to 2036, cbo.gov/publication/62105; data: US-CBO/cbo-data long_term_budget annual_fy_2026-02)"],
-  ["Aus GDP growth", "2.1%", "2026-09-02", "Jun qtr 2026", "ABS via RBA"], ["Aus GDP growth, financial year", "2.3%", "2026-10-23", "2025-26", "ABS national accounts"], ["Aus CPI inflation", "3.9%", "2026-10-28", "Sep qtr 2026", "ABS via RBA"],
-  ["Aus unemployment", "4.7%", "2026-10-16", "Sep 2026", "ABS"], ["RBA cash rate", "4.85%", "2026-11-03", "3 Nov 2026", "RBA"], ["AUD/USD", "0.7038", "2026-11-02", "30 Oct 2026", "FRED"],
+  ["US GDP growth", "3.4% (annualised)", "2026-10-29", "Q3 2026", "BEA via FRED"], ["US CPI inflation", "3.7%", "2026-10-15", "Sep 2026", "BLS via FRED"], ["US unemployment", `${B.usU}%`, "2026-11-06", "Oct 2026", "BLS (preliminary; payrolls +165k)"],
+  ["Fed funds (effective)", "3.88%", "2026-11-02", "Oct 2026", "FRED"], ["US 10y yield", "4.91%", "2026-11-03", "3 Nov 2026", "Daily briefing data"], ["US deficit", "5.8% GDP", "2026-02-11", "FY2026 est.", "CBO Feb 2026 baseline (pre-IEEPA ruling). FY2026 actual about 6.2% ($1.993tn, CBO Monthly Budget Review 8 Oct 2026, via secondary reports); Aug 2026 update about +$0.9tn over 2027-36"],
+  ["US debt held by public", "101% GDP", "2026-02-11", "FY2026 est.", "CBO Feb 2026 baseline (pre-IEEPA ruling)"], ["US gross debt", "121% GDP ($39.5T)", "2026-09-25", "Q2 2026", "FRED / Treasury. Debt payoff uses CBO FY2026 est. 123.6% (Feb 2026)"], ["US debt held by public, 2055 benchmark", "171.8% GDP (2055); 175.1% (2056)", "2026-02-11", "2055 and 2056 projections", "CBO Feb 2026 extended baseline (Budget and Economic Outlook 2026 to 2036, cbo.gov/publication/62105; data: US-CBO/cbo-data long_term_budget annual_fy_2026-02)"],
+  ["Aus GDP growth", "2.1%", "2026-09-02", "Jun qtr 2026", "ABS via RBA"], ["Aus GDP growth, financial year", "2.3%", "2026-10-23", "2025-26", "ABS national accounts"], ["Aus CPI inflation, headline (monthly CPI)", "4.3% y/y (trimmed mean 3.6%)", "2026-10-28", "Sep 2026", "ABS monthly CPI, 28 Oct 2026"], ["Aus CPI inflation, quarterly", "3.9%", "2026-10-28", "Sep qtr 2026", "ABS via RBA (not re-checked 9 Nov 2026)"],
+  ["Aus unemployment", "4.7%", "2026-10-16", "Sep 2026", "ABS"], ["RBA cash rate", "4.85%", "2026-11-03", "3 Nov 2026", "RBA"], ["AUD/USD", B.aud.toFixed(4), "2026-11-09", "9 Nov 2026", "RBA F11.1 (0.7040 on 30 Oct)"],
   ["Aus net / gross debt", "19.9% / 34.0% GDP", "2026-05-12", "30 Jun 2027 est.", "Budget Paper No. 1, 2026-27"], ["Aus deficit", "1.0% GDP ($31.5bn)", "2026-05-12", "2026-27 est.", "Budget Paper No. 1"],
   ["Iron ore (61% fines, CFR Qingdao)", "US$90.55/t (about $91)", "2026-11-03", "3 Nov 2026", "Mysteel SEADEX; SGX futures $90.85"],
-  ["Brent oil (futures settle)", "$104.77", "2026-11-02", "2 Nov 2026 settle", "CNBC futures report, 2 Nov 2026 (not EIA spot)"], ["Brent oil (EIA daily spot)", "$123.10", "2026-10-27", "27 Oct 2026", "EIA Europe Brent Spot Price FOB (RBRTE), released 28 Oct; next update 4 Nov 2026"],
+  ["Brent oil (futures settle)", `$${BRENT.usd}`, "2026-11-06", `${BRENT.date} settle (January contract)`, "Reuters / Euronext; CNBC (not EIA spot)"], ["Brent oil (EIA daily spot)", "$123.10", "2026-10-27", "27 Oct 2026", "EIA Europe Brent Spot Price FOB (RBRTE), released 28 Oct; next update 4 Nov 2026"],
   ["China GDP / CPI", "4.5% / 0.9%", "2026-10-21", "Q3 / Sep 2026", "NBS China"], ["Yuan / yen per US$", "6.65 / 157.5", "2026-11-02", "30 Oct 2026", "FRED"],
   ["Euro area GDP / HICP", "1.3% / 3.8%", "2026-10-30", "Q3 / Sep 2026", "Eurostat"], ["ECB deposit rate", "2.50%", "2026-11-03", "3 Nov 2026", "FRED"],
   ["Japan GDP", "1.4% (annualised)", "2026-09-08", "Q2 2026", "Cabinet Office"], ["Japan CPI / BoJ rate", "2.1% / 1.25%", "2026-10-30", "Sep / 30 Oct 2026", "Stat. Bureau / BoJ"],
@@ -413,7 +420,7 @@ const DATA: DRow[] = [
   ["Jobless FR / ES / DE / FI / SE / DK / NO / IS", "8.5 / 10.3 / 4.1 / 10.5 / 8.7 / 6.8 / 4.6 / 5.9%", "2026-10-30", "Sep 2026", "Eurostat"],
   ["Deficit / debt FR, ES, DE, FI, SE, DK", "5.1/115.7, 2.4/100.5, 2.9/62.8, 3.8/88.4, 1.6/35.1, -2.9/27.2", "2026-10-21", "2025", "Eurostat EDP"],
   ["Riksbank / Norges Bank / CB Iceland / Nationalbanken", "1.75 / 4.50 / 8.00 / 2.10%", "2026-10-07", "Oct 2026", "Central banks"],
-  ["US sector sizes", "BEA value added % of GDP", "2026-09-25", "Q2 2026", "BEA via FRED"], ["US jobs by industry", "BLS CES Table B-1", "2026-10-02", "Sep 2026", "BLS"],
+  ["US sector sizes", "BEA value added % of GDP", "2026-09-25", "Q2 2026", "BEA via FRED"], ["US jobs by industry", "BLS CES Table B-1; agriculture from QCEW (2025 annual average)", "2026-10-02", "Sep 2026", "BLS"],
   ["MPs owning investment properties (Australia)", "about 60%: UNVERIFIED", "2026-11-03", "Not checked", "IBTimes report only; not checked against the Register of Members' Interests"],
   ["Aus sector sizes", "ABS GVA by industry", "2026-10-23", "2025-26", "ABS national accounts"], ["Aus jobs by industry", "ABS Labour Force Detailed", "2026-03-26", "Feb 2026", "ABS"],
 ];
@@ -426,8 +433,22 @@ const BACKTESTS: BT[] = [
   { name: "US inflation surge 2021-22", lv: { ...ZERO, usSpend: 4, oil: 40 }, key: "usPi", yr: 1, what: "US CPI inflation vs about 2% before, pts (yr 2)", obs: 6.0, obsTxt: "CPI 8.0% in 2022 (annual average) versus about 2% before the pandemic", src: "BLS CPI-U annual averages; EIA Brent spot annual averages ($70.86 in 2021, $100.93 in 2022)", miss: "Pandemic supply-chain disruption and the very tight labour market are not in the model, so it explains only part of the surge." },
 ];
 
+// ===== What changed: dated items (content owned by Economist). Never called "today": the heading shows the as-of date,
+// and each "coming up" item moves to the past list automatically once its date has passed (reader's clock).
+const CHANGES = {
+  asOf: "9 Nov 2026",
+  items: ["US midterms (3 Nov): Democrats won both chambers on AP calls reported 8 to 9 Nov (House about 254 to 162 with 19 uncalled; Senate 54 to 44 with Alaska and Mississippi uncalled). The new Congress is sworn in on 3 Jan 2027.", `Brent oil: January futures settled at $${BRENT.usd} a barrel on ${BRENT.date} (Reuters/Euronext; CNBC), down from $104.77 on 2 Nov. The EIA daily spot price in Data & sources ($123.10, 27 Oct) is a different measure and date.`, `AUD/USD ${B.aud.toFixed(4)} on 9 Nov (RBA F11.1), down from 0.7040 on 30 Oct.`, `US unemployment ${B.usU}% in October; payrolls +165,000 (BLS, 6 Nov, preliminary).`, "RBA raised the cash rate 0.25 points to 4.85% on 3 Nov, an 18-year high (6 to 3 vote). The Fed held at 3.75 to 4.00% on 28 Oct (10 to 2 vote). US CPI 3.7% a year in September (BLS).", "Australian CPI: headline 4.3% a year in September (ABS monthly CPI, 28 Oct); trimmed mean 3.6%.", "US 10-year Treasury yield about 4.91% (3 Nov)."] as string[],
+  upcoming: [
+    { date: "2026-11-04", text: "Euro-area October inflation flash (Eurostat)" },
+    { date: "2026-11-05", text: "Bank of England and Norges Bank rate decisions" },
+    { date: "2026-11-12", text: "UK Q3 GDP first estimate (ONS)" },
+  ] as { date: string; text: string }[],
+};
+const fmtDay = (iso: string) => { const [y, m, d] = iso.split("-").map(Number); return `${d} ${["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][m - 1]} ${y}`; };
 const pay = (P: number, ratePct: number, yrs: number) => { const r = ratePct / 1200, n = yrs * 12; return r <= 0 ? P / n : P * r / (1 - Math.pow(1 + r, -n)); };
 
+// GDP conversions: 1% of GDP in money. Australia: Budget Paper No. 1 2026-27 ($31.5bn deficit = 1.0% of GDP, nominal GDP about A$3.09tn). US: CBO FY2026 GDP $31.90tn.
+const AU_BN_PER_PCT = 31, US_TN_PER_PCT = 0.319;
 const f1 = (v: number) => v.toFixed(1);
 const yrs = ["Yr 1", "Yr 2", "Yr 3", "Yr 4", "Yr 5"];
 
@@ -465,7 +486,7 @@ export default function App() {
   const runC = (l: Lv, k: number = 1): Out => { const key = `${k}|${(Object.keys(ZERO) as (keyof Lv)[]).map((x) => l[x]).join(",")}`; let o = runCache.get(key); if (!o) { if (runCache.size > 300) runCache.clear(); o = run(l, k, react, NR, D); runCache.set(key, o); } return o; };
   const NF = LRUN ? 50 : Math.max(10, Math.min(50, SL)); // Road to Surplus horizon
   const lab = (i: number) => (SL <= 10 ? `Yr ${i + 1}` : (i === 0 || (i + 1) % (SL > 50 ? 20 : SL > 20 ? 10 : 5) === 0) ? String(2027 + i) : "");
-  const partyRuns = useMemo(() => PARTIES.map((p) => { const q = pLv(p); return { p, m: run(q, 1, react, NR, D), l: run(q, 0.5, react, NR, D), h: run(q, 1.5, react, NR, D) }; }), [react, NR, D, pOff]);
+  const partyRuns = useMemo(() => PARTIES.map((p) => { const q = pLv(p); return { p, m: run(q, 1, react, NR, D, p.ends), l: run(q, 0.5, react, NR, D, p.ends), h: run(q, 1.5, react, NR, D, p.ends) }; }), [react, NR, D, pOff]);
   const C = FISCAL.find((c) => c.id === ctry) ?? FISCAL[0];
   const P = C.pkgs.find((x) => x.name === pk) ?? C.pkgs[2];
   const sp = rOff.spend ? 0 : P.spend, rv = rOff.rev ? 0 : P.rev;
@@ -474,7 +495,7 @@ export default function App() {
   const firstSurplus = (d: number[]) => { const i = d.findIndex((x: number) => x <= 0); return i < 0 ? `Not within ${NF} yrs` : `Year ${i + 1} (${2027 + i})`; };
   const yrs20 = Array.from({ length: NF }, (_: unknown, i: number) => (i % (NF > 20 ? 10 : 4) === 0 || i === NF - 1 ? String(2027 + i) : ""));
   const dot = (c: string, n: string) => (<span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><span style={{ width: 10, height: 10, borderRadius: 5, background: c, display: "inline-block" }} />{n}</span>);
-  const pr = (x: { m: Out; l: Out; h: Out }, key: string, d: number) => `${f1(x.m[key][d])} (${f1(Math.min(x.l[key][d], x.h[key][d]))} to ${f1(Math.max(x.l[key][d], x.h[key][d]))})`;
+  const pr = (x: { m: Out; l: Out; h: Out }, key: string, d: number) => `${f1(x.m[key][d])} (${f1(Math.min(x.l[key][d], x.m[key][d], x.h[key][d]))} to ${f1(Math.max(x.l[key][d], x.m[key][d], x.h[key][d]))})`;
   const sel = PARTIES.find((p) => p.id === party) ?? PARTIES[0];
   const aiRuns = useMemo(() => AI_SC.map((s) => ({ s, m: run(s.lv, 1, react, NR, D), l: run(s.lv, 0.5, react, NR, D), h: run(s.lv, 1.5, react, NR, D) })), [react, NR, D]);
   const [dId, setDId] = useState<string>("usp");
@@ -503,11 +524,11 @@ export default function App() {
       <LineChart points={cut(mid[key]).map((v: number, i: number) => ({ label: lab(i), value: v }))}
         labels={["Your policy", "No change"]} secondary={{ label: "No change", values: cut(base[key]) }}
         lines={[{ label: "Low-impact view", values: cut(lo[key]) }, { label: "High-impact view", values: cut(hi[key]) }, ...(alt && fkL ? [{ label: `${isOn(fkL) ? "Without" : "With"} ${nm(fkL)}`, values: cut(alt[key]) }] : [])]}
-        ceiling={mx + pad} floor={mn - pad} unit={unit} format={fmt} legend={false} />
+        ceiling={mx + pad} floor={mn - pad} unit={unit} format={fmt} legend={false} annotations={SL > 30 ? [{ at: 29, label: "2056: CBO window ends; extrapolation after" }] : undefined} />
     );
   };
   const arrow = (v: number) => (v > 0.5 ? "Up " : v < -0.5 ? "Down " : "Flat ");
-  const rng = (k: string, d: number) => `${Math.min(lo[k][d], hi[k][d]).toFixed(1)} to ${Math.max(lo[k][d], hi[k][d]).toFixed(1)}`;
+  const rng = (k: string, d: number) => `${Math.min(lo[k][d], mid[k][d], hi[k][d]).toFixed(1)} to ${Math.max(lo[k][d], mid[k][d], hi[k][d]).toFixed(1)}`;
 
   const chip = (id: string, text: string, on: boolean, onTap: () => void, strike?: boolean) => (
     <button key={id} type="button" data-chip={id} aria-pressed={on} onClick={onTap}
@@ -537,6 +558,8 @@ export default function App() {
   const [tab, setTab] = useState<string>("sim");
   const topRef = useRef<HTMLDivElement>(null);
   const first = useRef<boolean>(true);
+  const [narrow, setNarrow] = useState<boolean>(false); // phone-width layout: the Go to menu sits in the page instead of floating over content
+  useEffect(() => { const f = () => setNarrow(window.innerWidth < 600); f(); window.addEventListener("resize", f); return () => window.removeEventListener("resize", f); }, []);
   useEffect(() => { if (first.current) { first.current = false; return; } topRef.current?.scrollIntoView({ block: "start" }); }, [tab]);
   const TABS = [{ value: "sim", label: "Simulator" }, { value: "parties", label: "Parties: compare all" }, { value: "mix", label: "Mix & match worlds" }, { value: "road", label: "Road to Surplus" }, { value: "ai", label: "AI" }, { value: "life", label: "Better life" }, { value: "world", label: "Every economy" }, { value: "house", label: "Household" }, { value: "sector", label: "Sectors" }, { value: "auhh", label: "Australian household by party" }, { value: "data", label: "Data & sources" }];
   // ---------- Mix & match: 2-4 worlds, each a US party + an Australian party + optional add-ons, all run through the same two-country engine ----------
@@ -558,7 +581,7 @@ export default function App() {
   const setW = (i: number, p: Partial<World>) => setWorlds(worlds.map((w: World, j: number) => (j === i ? { ...w, ...p } : w)));
   const QUICK: [string, string, string][] = [["onp", "dem", "One Nation + Democrats"], ["onp", "rep", "One Nation + Republicans"], ["lnp", "dem", "Coalition + Democrats"], ["lnp", "rep", "Coalition + Republicans"]];
   const mort = (o: Out, rk: string, sprd: number, loan: number) => pay(loan, o[rk][1] + sprd, 30);
-  const wr = (x: { m: Out; l: Out; h: Out }, f: (o: Out) => number, dp: number = 1) => `${f(x.m).toFixed(dp)} (${Math.min(f(x.l), f(x.h)).toFixed(dp)} to ${Math.max(f(x.l), f(x.h)).toFixed(dp)})`;
+  const wr = (x: { m: Out; l: Out; h: Out }, f: (o: Out) => number, dp: number = 1) => `${f(x.m).toFixed(dp)} (${Math.min(f(x.l), f(x.m), f(x.h)).toFixed(dp)} to ${Math.max(f(x.l), f(x.m), f(x.h)).toFixed(dp)})`;
   const dir = (v: number) => (v > 0.5 ? `Up ${f1(v)}%` : v < -0.5 ? `Down ${f1(-v)}%` : `Flat ${f1(v)}%`);
   const MX_US = ["rep", "dem", ""], MX_AU = ["alp", "lnp", "grn", "onp", ""];
   const matrix = useMemo(() => MX_US.map((u: string) => MX_AU.map((a: string) => glob(run(wLv({ us: u, au: a, add: [], on: true }), 1, react, NR, D)))), [react, NR, D, pOff]);
@@ -612,7 +635,7 @@ export default function App() {
     const prices = 100 * o.pi.slice(0, d + 1).reduce((s: number, v: number) => s * (1 + v / 100), 1);
     return { rate, pm, prices, jobs: o.u[d] };
   };
-  const usDebtGross = 121;
+  const usDebtGross = 121; // FRED / Treasury, Q2 2026 (the Debt payoff table uses CBO FY2026 est. 123.6%)
   const HLF: Record<string, number> = { us: 170.6, au: 15.5, uk: 35.6, fr: 31.5, de: 44.6, es: 24.6, fi: 2.8, se: 5.8, no: 3.0, dk: 3.2, is: 0.23 };
   const SUMMARY: Record<string, string> = {
     base: "Current settings, for reference.",
@@ -621,7 +644,7 @@ export default function App() {
     grn: "Higher tax-free threshold and payments, paid for by new gas and mining taxes.",
     onp: "Fuel excise and other tax cuts, higher defence spending, and much lower migration.",
   };
-  const cost = (x: { m: Out; l: Out; h: Out }) => { const d = (o: Out) => o.auDef.slice(0, 5).reduce((s: number, v: number, i: number) => s + v - base.auDef[i], 0) / 5; const a = d(x.m), b = d(x.l), c = d(x.h); return `${a >= 0 ? "+" : ""}${f1(a)}% GDP, about A$${Math.abs(a * 29).toFixed(0)}bn/yr ${a >= 0 ? "more deficit" : "less deficit"} (${f1(Math.min(b, c))} to ${f1(Math.max(b, c))})`; };
+  const cost = (x: { m: Out; l: Out; h: Out }) => { const d = (o: Out) => o.auDef.slice(0, 5).reduce((s: number, v: number, i: number) => s + v - base.auDef[i], 0) / 5; const a = d(x.m), b = d(x.l), c = d(x.h); return `${a >= 0 ? "+" : ""}${f1(a)}% GDP, about A$${Math.abs(a * AU_BN_PER_PCT).toFixed(0)}bn/yr ${a >= 0 ? "more deficit" : "less deficit"} (${f1(Math.min(a, b, c))} to ${f1(Math.max(a, b, c))})`; };
   const mini = (key: string, label: string) => multi(auAll, key, label);
   const sgn = (v: number, dp: number = 2) => `${v > 0 ? "+" : ""}${v.toFixed(dp)}`;
   // ---------- Sectors: policy picker, compare, jobs ----------
@@ -719,13 +742,18 @@ export default function App() {
   return (
     <Page width="wide" title="US + Australia Policy Simulator"
       summary="Pull policy levers in the US, Australia, China, Japan, Europe and the UK, or move oil, and see the estimated five-year effects, starting from the latest official data.">
+      {narrow && <Select label="Go to" value={tab} onChange={(v: string) => setTab(v)} options={TABS} />}
       <Callout tone="warning" lead="Educational toy, not a forecast.">It uses simple published rules of thumb. Economists disagree, so thin lines and bracketed numbers show a low-impact and a high-impact view. It takes no political side.</Callout>
 
-      <div ref={topRef} style={{ scrollMarginTop: 96 }} />
+      <div ref={topRef} style={{ scrollMarginTop: narrow ? 16 : 96 }} />
       <Text>{`${TABS.find((x) => x.value === tab)?.label ?? ""}: ${HELP[tab] ?? ""} Switch tabs with the menu at the top.`}</Text>
-      <Section heading="What changed today (3 Nov 2026)" collapsible defaultOpen={false}>
-        <BulletList items={["RBA raised the cash rate 0.25 points to 4.85%, an 18-year high (6-3 vote).", "Brent oil: futures settled at $104.77 a barrel on 2 Nov (CNBC); the latest EIA daily spot price is $123.10 on 27 Oct (next EIA update 4 Nov). These are different dates and different measures (futures vs spot), not one move.", "US 10-year Treasury yield about 4.91%.", "US midterm elections are today; results may change which party plans can pass Congress.", "Next: euro-area October inflation (4 Nov), Bank of England and Norges Bank decisions (5 Nov)."]} />
-      </Section>
+      {(() => { const n = new Date(); const today = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, "0")}-${String(n.getDate()).padStart(2, "0")}`;
+        const past = CHANGES.upcoming.filter((u) => u.date < today), next = CHANGES.upcoming.filter((u) => u.date >= today);
+        return (
+      <Section heading={`What changed (as of ${CHANGES.asOf})`} collapsible defaultOpen={false}>
+        <BulletList items={[...CHANGES.items, ...past.map((u) => `${u.text}: was scheduled for ${fmtDay(u.date)}; the result has not been added here yet.`)]} />
+        {next.length > 0 && <Text>{"Coming up: " + next.map((u) => `${u.text} (${fmtDay(u.date)})`).join("; ") + "."}</Text>}
+      </Section>); })()}
 
       {tab === "sim" && (<>
       <Section heading="How to use" collapsible defaultOpen={moved === 0}>
@@ -775,7 +803,7 @@ export default function App() {
           ))}
         </Section>
         <Text>{moved === 0 ? "No levers moved: showing the no-change path." : `${moved} lever(s) moved${iso ? `; isolating ${nm(iso.replace("eu.", ""))} only` : Object.values(off).some((x: boolean) => x) ? `; ${Object.values(off).filter((x: boolean) => x).length} excluded` : ""}.`}</Text>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}><Button label="Include every policy again" onClick={() => { setOff({}); setIso(""); }} /></div>
+        {(iso !== "" || Object.values(off).some((x: boolean) => x)) && <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}><Button label="Include every policy again" onClick={() => { setOff({}); setIso(""); }} /></div>}
       </Section>
 
       <Section heading="Save or share this scenario" collapsible defaultOpen={false}>
@@ -795,7 +823,7 @@ export default function App() {
         <Segmented value={cmpKey} onChange={setCmpKey} options={[{ value: "g", label: "Growth" }, { value: "pi", label: "Inflation" }, { value: "u", label: "Jobless" }, { value: "def", label: "Deficit" }, { value: "debt", label: "Debt" }]} />
         {keyRow(ECOS.filter((e) => picked.includes(e.id)).map((e) => ({ p: { id: e.id, name: e.name, color: e.color } })))}
         {multi(ECOS.filter((e) => picked.includes(e.id)).map((e) => ({ p: { id: e.id, name: e.name, color: e.color }, m: e.m })), cmpKey, ({ g: "Growth, %", pi: "Inflation, %", u: "Unemployment, %", def: "Deficit, % of GDP (minus = surplus)", debt: "Government debt, % of GDP" } as Record<string, string>)[cmpKey])}
-        <Table columns={["Economy", "Growth yr 2", "Inflation yr 2", "Jobless yr 2", "Deficit yr 2", "Debt yr 5", "Mortgage / month"]} rows={ECOS.filter((e) => picked.includes(e.id)).map((e) => { const r = (k2: string, d: number) => `${f1(e.m[k2][d])} (${f1(Math.min(e.l[k2][d], e.h[k2][d]))} to ${f1(Math.max(e.l[k2][d], e.h[k2][d]))})`; return [dot(e.color, e.name), r("g", 1), r("pi", 1), r("u", 1), r("def", 1), r("debt", 4), `${e.cur}${Math.round(house(e, e.m, 1).pm).toLocaleString()}`]; })} />
+        <Table columns={["Economy", "Growth yr 2", "Inflation yr 2", "Jobless yr 2", "Deficit yr 2", "Debt yr 5", "Mortgage / month"]} rows={ECOS.filter((e) => picked.includes(e.id)).map((e) => { const r = (k2: string, d: number) => `${f1(e.m[k2][d])} (${f1(Math.min(e.l[k2][d], e.m[k2][d], e.h[k2][d]))} to ${f1(Math.max(e.l[k2][d], e.m[k2][d], e.h[k2][d]))})`; return [dot(e.color, e.name), r("g", 1), r("pi", 1), r("u", 1), r("def", 1), r("debt", 4), `${e.cur}${Math.round(house(e, e.m, 1).pm).toLocaleString()}`]; })} />
         <Section heading="Government and party presets in Europe" collapsible defaultOpen={false}>
           <Text>Each European economy starts from its current government's budget (the baseline). Main-party alternative presets for the UK and the Nordic and euro-area countries are not yet built, so those levers stay at baseline; use the Europe sliders in the Simulator to test a party's plan by hand.</Text>
         </Section>
@@ -854,7 +882,7 @@ export default function App() {
           ["Aus deficit % GDP", f1(base.auDef[1]), ...wRuns.map((x) => wr(x, (o: Out) => o.auDef[1]))],
           [`Aus net debt, end of yr ${SL}`, f1(base.auDebt[SL - 1]), ...wRuns.map((x) => wr(x, (o: Out) => o.auDebt[SL - 1]))],
           ["World growth proxy %", f1(baseG.glob[1]), ...wRuns.map((x) => wr(x, (o: Out) => o.glob[1]))],
-          ["Oil (Brent assumption)", "$105", ...wRuns.map((x) => `$${(105 * (1 + x.q.oil / 100)).toFixed(0)}`)],
+          ["Oil (Brent assumption)", `$${BRENT.usd.toFixed(0)}`, ...wRuns.map((x) => `$${(BRENT.usd * (1 + x.q.oil / 100)).toFixed(0)}`)],
           ["AUD/USD", base.aud[1].toFixed(3), ...wRuns.map((x) => wr(x, (o: Out) => o.aud[1], 3))],
           ["S&P 500 vs no change", "0", ...wRuns.map((x) => dir(x.m.spx[1]))],
           ["ASX 200 vs no change", "0", ...wRuns.map((x) => dir(x.m.asx[1]))],
@@ -887,7 +915,7 @@ export default function App() {
             ["Real take-home pay vs no change", `${inc >= 0 ? "+" : ""}${f1(inc)}%`, "0%"],
           ]} />); })()}
         <Section heading="How these are worked out" collapsible defaultOpen={false}>
-          <BulletList items={["Mortgage rate = model policy rate plus a typical lender margin (US: 10-year yield + 1.7 for a 30-year fixed; Australia: cash rate + 1.9 variable; Europe: policy rate + 0.5 to 1.5).", "Grocery prices follow model inflation; fuel moves about 35% of the oil price change.", "Take-home pay: 0.7 times the extra growth, less a share of extra inflation, less any tax rise in % of GDP.", "Loan sizes are rough typical first-home loans, not national averages."]} />
+          <BulletList items={["Mortgage rate = model policy rate plus a typical lender margin (US: 10-year yield + 1.7 for a 30-year fixed; Australia: cash rate + 1.9 variable; Europe: policy rate + 0.5 to 1.5).", "Grocery prices follow model inflation; fuel moves about 35% of the oil price change.", "Take-home pay: 0.7 times the extra growth, less a share of extra inflation, less any tax rise in % of GDP. Caveat: the tax term uses the whole tax lever, including company and resource taxes, so it overstates the hit to wage earners for presets that raise business taxes (for example the Greens, whose personal tax change is a cut). A personal versus company split is pending.", "Loan sizes are rough typical first-home loans, not national averages."]} />
         </Section>
       </Section>
       {cmpSec("Household view of two policies side by side: pick any two.")}
@@ -977,6 +1005,7 @@ export default function App() {
         </div>
         <Segmented value={mult} onChange={setMult} options={[{ value: "lo", label: "Low multiplier" }, { value: "mid", label: "Middle" }, { value: "hi", label: "High multiplier" }]} />
         <Segmented value={rg} onChange={setRg} options={[{ value: "now", label: `r - g today (${f1(C.r - C.g)})` }, { value: "up", label: `r - g 1 pt higher (${f1(C.r - C.g + 1)})` }]} />
+        <Text>{"r − g: the interest rate on government debt minus the economy's growth rate; when it's positive, debt tends to grow faster than the economy."}</Text>
         <Segmented value={taxH} onChange={setTaxH} options={[{ value: "cbo", label: "Cuts cost more growth (CBO)" }, { value: "alesina", label: "Tax rises cost more (Alesina et al.)" }]} />
         <Text>{"Multiplier = how much each 1% of GDP of tightening slows growth in year 1, which then shrinks revenue. Low 0.5, middle 1.0 (spending; tax 0.5), high 1.5 (Blanchard & Leigh, IMF WP/13/1, found multipliers were underestimated in 2010-11). r - g = interest rate on debt minus nominal growth; higher r - g makes debt harder to cut. Whether spending cuts or tax rises cost more growth is contested: CBO's multipliers say cuts; Alesina, Favero & Giavazzi (2019) say tax rises; others dispute that."}</Text>
         <Table columns={["Sensitivity (this package)", "r - g today: first surplus", `debt ${2026 + NF}`, "r - g +1 pt: first surplus", `debt ${2026 + NF}`]} rows={[["Low multiplier", 0.5], ["Middle", 1], ["High multiplier", 1.5]].map(([n, kk]) => { const a = fiscal(C, sp, rv, kk as number, 0, NF, tH), b = fiscal(C, sp, rv, kk as number, 1, NF, tH); return [n as string, firstSurplus(a.def), f1(a.debt[NF - 1]) + "%", firstSurplus(b.def), f1(b.debt[NF - 1]) + "%"]; })} />
@@ -1018,8 +1047,8 @@ export default function App() {
       <Section heading="Paying off the debt entirely" caption="Primary surplus = the budget surplus before interest payments. Assumes a constant surplus held every year.">
         <Segmented value={dId} onChange={setDId} options={DEBTS.map((x) => ({ value: x.id, label: x.name }))} />
         <Toggle label="With an AI boom (growth +0.8 pts a year, interest +0.4)" value={ai} onChange={setAi} />
-        <Table columns={["Pay off in", "Primary surplus needed", "Swing from today", "In today's money / yr"]} rows={[20, 30, 40].map((N: number) => { const p = payoff(DB.d, DB.r + rAI, DB.g + gAI, N); return [`${N} years`, f1(p) + "% GDP", f1(p - DB.prim) + " pts", DB.id.startsWith("us") ? `$${(p - DB.prim) * 0.31 > 0 ? ((p - DB.prim) * 0.31).toFixed(1) : "0"}T` : `A$${((p - DB.prim) * 29).toFixed(0)}bn`]; })} />
-        <Text>{DB.id.startsWith("us") ? "Verdict: paying off US debt is not realistic. Even over 40 years it needs a swing of about 5 points of GDP held for a generation, which has never been done deliberately in peacetime; an AI boom trims this by well under a point once higher interest rates are allowed for. Stabilising debt is the more common goal among economists." : "Verdict: realistic for net debt. Australia did it once: net debt reached about zero in 2006 and the Future Fund was set up in 2006 to hold surpluses. That was helped a great deal by the mining boom, rising terms of trade and asset sales (Telstra, Commonwealth Bank), not policy alone. Gross debt is usually kept to support a working bond market."}</Text>
+        <Table columns={["Pay off in", "Primary surplus needed", "Swing from today", "In today's money / yr"]} rows={[20, 30, 40].map((N: number) => { const p = payoff(DB.d, DB.r + rAI, DB.g + gAI, N); return [`${N} years`, f1(p) + "% GDP", f1(p - DB.prim) + " pts", DB.id.startsWith("us") ? `$${(p - DB.prim) * US_TN_PER_PCT > 0 ? ((p - DB.prim) * US_TN_PER_PCT).toFixed(1) : "0"}T` : `A$${((p - DB.prim) * AU_BN_PER_PCT).toFixed(0)}bn`]; })} />
+        <Text>{DB.id.startsWith("us") ? "Verdict: paying off US debt is not realistic. Even over 40 years it needs a swing of about 5 points of GDP held for a generation, which is rare for a deliberate peacetime effort; an AI boom trims this by well under a point once higher interest rates are allowed for. Stabilising debt is the more common goal among economists." : "Verdict: realistic for net debt. Australia did it once: net debt reached about zero in 2006 and the Future Fund was set up in 2006 to hold surpluses. That was helped a great deal by the mining boom, rising terms of trade and asset sales (Telstra, Commonwealth Bank), not policy alone. Gross debt is usually kept to support a working bond market."}</Text>
         <Section heading="The debate: is zero debt even a good goal?" collapsible defaultOpen={true}>
         <Text>{"Arguments against aiming for zero:"}</Text>
         <BulletList items={["Treasuries are the main safe asset for banks, pension funds and foreign central banks, and the Fed uses them to run monetary policy. In 2000-01, when surpluses were forecast to pay off US debt, FOMC minutes discussed how to operate with a disappearing Treasury market.", "When interest rates are below growth (r < g), moderate public debt may have low fiscal cost and can even raise welfare (Blanchard, AER 2019).", "Australia kept issuing some bonds even at zero net debt in the 2000s so the market kept working."]} />
@@ -1046,7 +1075,7 @@ export default function App() {
       <Section heading="Time horizon" caption="How far ahead to look, and how long budget and tariff changes last before being phased out.">
         <Segmented value={hz} onChange={setHz} options={[{ value: "1", label: "\u00a01 yr\u00a0" }, { value: "2", label: "\u00a02 yr\u00a0" }, { value: "3", label: "\u00a03 yr\u00a0" }, { value: "4", label: "\u00a04 yr\u00a0" }, { value: "5", label: "\u00a05 yr\u00a0" }, { value: "10", label: "\u00a010 yr\u00a0" }, { value: "20", label: "\u00a020 yr\u00a0" }, { value: "30", label: "\u00a030 yr\u00a0" }, { value: "50", label: "\u00a050 yr\u00a0" }, { value: "lr", label: "Long run" }]} />
         <Segmented value={durS} onChange={setDurS} options={[{ value: "5", label: "Policies last 5 yrs" }, { value: "10", label: "10 yrs" }, { value: "perm", label: "Permanent" }]} />
-        {SL >= 30 && base.debt.length > 28 && <Text>{`Benchmark: with no change, this model puts US debt held by the public at ${f1(base.debt[28])}% of GDP in 2055; CBO's February 2026 extended baseline projects 171.8% in 2055 and 175.1% in 2056 (cbo.gov/publication/62105), so the model is about 3 points below CBO in 2055. CBO's window ends at 2056 (30 years), so anything later is an extrapolation and is labelled that way.`}</Text>}
+        {SL >= 30 && base.debt.length > 28 && <Text>{`Benchmark: with no change, this model puts US debt held by the public at ${f1(base.debt[28])}% of GDP in 2055; CBO's February 2026 extended baseline (pre-IEEPA ruling) projects 171.8% in 2055 and 175.1% in 2056 (cbo.gov/publication/62105), so the model is about 3 points below CBO in 2055. CBO's window ends at 2056 (30 years), so anything later is an extrapolation and is labelled that way.`}</Text>}
         {SL > 10 && <Text>Past 10 years this is about where things settle, not a forecast: growth returns to trend (US 2.0%, Australia 2.2%), inflation to target, unemployment to its normal rate, and central banks back to neutral. Debt follows interest rate versus growth.</Text>}
       </Section>
       {LRUN && (
@@ -1081,11 +1110,14 @@ export default function App() {
           { label: "US unemployment", value: mid.usU[1].toFixed(2) + "%", detail: "No change: " + base.usU[1].toFixed(2) + "%" },
           { label: "Aus growth", value: f1(mid.auG[1]) + "%", detail: "No change: " + f1(base.auG[1]) + "%" },
           { label: "Aus unemployment", value: mid.auU[1].toFixed(2) + "%", detail: "No change: " + base.auU[1].toFixed(2) + "%" },
-          { label: "AUD/USD", value: mid.aud[1].toFixed(3), detail: "Now 0.704" },
+          { label: "AUD/USD", value: mid.aud[1].toFixed(3), detail: "Now " + B.aud.toFixed(3) },
           { label: "US debt (yr 5)", value: f1(mid.debt[4]) + "% GDP", detail: "No change: " + f1(base.debt[4]) + "%" },
           { label: "S&P 500", value: arrow(mid.spx[1]) + f1(mid.spx[1]) + "%", detail: "vs no change" },
           { label: "ASX 200", value: arrow(mid.asx[1]) + f1(mid.asx[1]) + "%", detail: "vs no change" },
         ]} />
+        {(lvE.usSpend > 0 || lvE.usTax < 0) && mid.debt[0] < base.debt[0] && <Text>{"Why US debt dips at first: the model's spending multiplier (1.0) and lasting level effect lift nominal GDP faster than the extra borrowing in years 1 and 2, so debt as a share of GDP falls briefly before rising. Many official dynamic analyses show debt rising from the start when spending is deficit-financed, so treat the early dip as a feature of this simple model."}</Text>}
+        {4 * (lvE.boj - lvE.fed) > 3 && <Text>{"Why stocks fall here: a large Fed cut relative to the BoJ strengthens the yen by more than 3% in this model, which forces yen carry-trade selling (as in August 2024) and hits stocks and the AUD. Without that channel, rate cuts usually lift stocks. The size of this hit is uncertain."}</Text>}
+        {lvE.oil < 0 && <Text>{"Why stocks can dip when oil falls: any big oil move, up or down, takes a small one-off volatility penalty off stocks in year 1, so an oil price fall can nudge stocks down at first."}</Text>}
       </Section>
 
       <Section heading={LRUN ? "Charts: the long run (100 years)" : `Charts: the next ${SL} year${SL === 1 ? "" : "s"}`} caption="Thick line: your policy. Dashed: no change. Thin lines: low and high-impact views. Change the time horizon above.">
@@ -1102,7 +1134,7 @@ export default function App() {
       </Section>
 
       <Section heading="Price level, GDP per person and rents" collapsible defaultOpen={false} caption="Change versus no change, middle estimate with the low to high range.">
-        {(() => { const yi = Math.min(4, NR - 1), y2 = Math.min(1, NR - 1); const dd = (key: string, i: number) => { const a = mid[key][i] - base[key][i], b = lo[key][i] - base[key][i], c = hi[key][i] - base[key][i]; return `${sgn(a, 2)} (${sgn(Math.min(b, c), 2)} to ${sgn(Math.max(b, c), 2)})`; };
+        {(() => { const yi = Math.min(4, NR - 1), y2 = Math.min(1, NR - 1); const dd = (key: string, i: number) => { const a = mid[key][i] - base[key][i], b = lo[key][i] - base[key][i], c = hi[key][i] - base[key][i]; return `${sgn(a, 2)} (${sgn(Math.min(a, b, c), 2)} to ${sgn(Math.max(a, b, c), 2)})`; };
           return <Table columns={["Measure", `Yr ${y2 + 1}`, `Yr ${yi + 1}`]} rows={[
             ["US price level from tariffs, %", dd("usPL", y2), dd("usPL", yi)],
             ["US inflation, pts", dd("usPi", y2), dd("usPi", yi)],
@@ -1132,7 +1164,7 @@ export default function App() {
           ["Aus growth %", f1(mid.auG[1]), rng("auG", 1)],
           ["Aus inflation %", f1(mid.auPi[1]), rng("auPi", 1)],
           ["Aus unemployment %", f1(mid.auU[1]), rng("auU", 1)],
-          ["AUD/USD", mid.aud[1].toFixed(3), `${Math.min(lo.aud[1], hi.aud[1]).toFixed(3)} to ${Math.max(lo.aud[1], hi.aud[1]).toFixed(3)}`],
+          ["AUD/USD", mid.aud[1].toFixed(3), `${Math.min(lo.aud[1], mid.aud[1], hi.aud[1]).toFixed(3)} to ${Math.max(lo.aud[1], mid.aud[1], hi.aud[1]).toFixed(3)}`],
         ]} />
       </Section>
 
@@ -1159,8 +1191,8 @@ export default function App() {
         ]} />
         <Table columns={["Sector", "Size (% GDP)", "Jobs now (000s)", "Extra growth, pts (low to high)", "Jobs effect (people)", "Main channel"]} rows={SECT.map((s: Sect, j: number) => [
           s.name, f1(secC === "us" ? s.usShare : s.auShare), (secC === "us" ? s.usJobs : s.auJobs) ? Math.round(secC === "us" ? s.usJobs : s.auJobs).toLocaleString() : "n/a (farms not in BLS payrolls)",
-          `${sg(sMid[j])} (${sg(Math.min(sLo[j], sHi[j]))} to ${sg(Math.max(sLo[j], sHi[j]))})`, (secC === "us" ? s.usJobs : s.auJobs) ? jf(sJobs[j]) : "not yet sourced", s.why])} />
-        <Text>{`Extra growth is points of industry output growth versus no change. Sizes: ${secC === "us" ? "BEA value added by industry, Q2 2026; jobs: BLS CES payrolls, Sep 2026" : "ABS national accounts 2025-26 (industry GVA); jobs: ABS Labour Force Detailed, Feb 2026"}. Low and high are half and one-and-a-half times the middle.`}</Text>
+          `${sg(sMid[j])} (${sg(Math.min(sLo[j], sMid[j], sHi[j]))} to ${sg(Math.max(sLo[j], sMid[j], sHi[j]))})`, (secC === "us" ? s.usJobs : s.auJobs) ? jf(sJobs[j]) : "not yet sourced", s.why])} />
+        <Text>{`Extra growth is points of industry output growth versus no change. Sizes: ${secC === "us" ? "BEA value added by industry, Q2 2026; jobs: BLS CES payrolls, Sep 2026; agriculture from QCEW" : "ABS national accounts 2025-26 (industry GVA); jobs: ABS Labour Force Detailed, Feb 2026"}. Low and high are half and one-and-a-half times the middle.`}</Text>
       </Section>
       <Section heading="Compare two policies on sectors">
         <Grid columns={2}>
@@ -1211,7 +1243,7 @@ export default function App() {
             ["US inflation 2027 (CPI; CBO PCE 2.3 + 0.4)", v(base.usPi, 0), [2.7, null, null, null]], ["US unemployment 2027", v(base.usU, 0), [4.5, null, null, null]], ["US 10-year yield 2027", v(base.y10, 0), [4.3, null, null, null]],
             ["Aus growth 2027", v(base.auG, 0), [null, 1.6, 1.7, 1.3]], ["Aus growth 2028", v(base.auG, 1), [null, null, null, 1.5]],
             ["Aus CPI 2027 (RBA Jun/Dec avg)", v(base.auPi, 0), [null, null, null, 3.2]], ["Aus CPI 2028", v(base.auPi, 1), [null, null, null, 2.45]],
-            ["Aus unemployment 2027", v(base.auU, 0), [null, null, null, 4.9]], ["Aus unemployment 2028", v(base.auU, 1), [null, null, null, 5.1]], ["RBA cash rate 2027", v(base.rbaR, 0), [null, null, null, 4.85]]];
+            ["Aus unemployment 2027", v(base.auU, 0), [null, null, null, 4.9]], ["Aus unemployment 2028", v(base.auU, 1), [null, null, null, 5.1]], ["RBA cash rate 2027 (RBA market-path assumption, not a forecast)", v(base.rbaR, 0), [null, null, null, 4.85]]];
           const cell = (x: number | null) => (x === null ? "not published by this forecaster" : f1(x));
           return <Table columns={["Measure", "Model", "CBO Feb 2026", "IMF WEO Oct 2026", "OECD Sep 2026", "RBA Nov 2026", "Gap", "Verdict"]} rows={rows.map((r: [string, number, (number | null)[]]) => { const xs = r[2].filter((x: number | null): x is number => x !== null); const avg = xs.reduce((a: number, b: number) => a + b, 0) / xs.length; const gap = r[1] - avg;
             return [r[0], f1(r[1]), ...r[2].map(cell), `${gap >= 0 ? "+" : ""}${f1(gap)}`, Math.abs(gap) <= 0.3 ? "Close" : Math.abs(gap) <= 0.7 ? "Some gap" : "Big gap"]; })} />; })()}
@@ -1220,7 +1252,7 @@ export default function App() {
 
       <Section heading="Backtests: three past episodes" collapsible defaultOpen={true}>
         <Text>{"Each episode's levers are run against no change, and the model's change is compared with what was published or observed. These are rough: the past baseline and lever sizes are approximate, and three episodes cannot validate a model."}</Text>
-        {(() => { const bt = BACKTESTS.map((b: BT) => { const m = run(b.lv, 1, false, 2, 1), z = run(ZERO, 1, false, 2, 1), lo = run(b.lv, 0.5, false, 2, 1), hi = run(b.lv, 1.5, false, 2, 1); const d = (o: Out) => o[b.key][b.yr] - z[b.key][b.yr]; return { b, mid: d(m), lo: Math.min(d(lo), d(hi)), hi: Math.max(d(lo), d(hi)) }; });
+        {(() => { const bt = BACKTESTS.map((b: BT) => { const m = run(b.lv, 1, false, 2, 1), z = run(ZERO, 1, false, 2, 1), lo = run(b.lv, 0.5, false, 2, 1), hi = run(b.lv, 1.5, false, 2, 1); const d = (o: Out) => o[b.key][b.yr] - z[b.key][b.yr]; return { b, mid: d(m), lo: Math.min(d(lo), d(m), d(hi)), hi: Math.max(d(lo), d(m), d(hi)) }; });
           return (<>
             <Table columns={["Episode", "Measure", "Model (low to high)", "Published or observed", "Error (model minus observed)", "Source"]} rows={bt.map((x) => [x.b.name, x.b.what, `${sgn(x.mid, 2)} (${sgn(x.lo, 2)} to ${sgn(x.hi, 2)})`, `${sgn(x.b.obs, 1)}: ${x.b.obsTxt}`, `${sgn(x.mid - x.b.obs, 2)} pts`, x.b.src])} />
             <BulletList items={bt.map((x) => `${x.b.name}: ${x.b.miss}`)} />
@@ -1234,16 +1266,17 @@ export default function App() {
           "Tariffs: 10 points raises the US price level about 0.8% over two years (Fed/NBER near-full pass-through; Amiti, Redding & Weinstein, JEP 2019). The price level stays higher for as long as the tariff lasts; only the inflation rate fades, and prices fall back as the tariff is phased out. It also trims growth 0.25 and raises 0.45% of GDP.",
           "Central banks: a 1-point hike cuts growth 0.3 to 0.5 and inflation about 0.25 to 0.3, peaking after a year (FRB/US, RBA MARTIN, ECB and BoE models).",
           "Okun's law: each point of growth above trend lowers unemployment about half a point.",
-          "Yields: 1% of GDP more deficit adds about 0.2 points, 1 point of debt about 0.025 points (Laubach; CBO).",
+          "Yields: each point of debt above today's level adds about 0.02 points to the 10-year yield, within a risk premium of -1 to +2.5 points (Laubach; CBO). Deficits work through debt; there is no separate deficit term.",
           "China: 1 point slower growth costs Australia about 0.3 points and the US about 0.1 (RBA; IMF spillover reports). A 10% ore shock moves China-linked demand about 0.5 points.",
           "Europe: 1 point weaker euro-area growth costs the US about 0.15 and the UK about 0.5 (IMF; OECD trade shares: the EU buys about 18% of US goods exports).",
           "Oil: 10% higher raises inflation about 0.2 to 0.3 points in the US, Australia, Europe and the UK, and cuts growth about 0.15 in oil importers; the US is a net exporter, so its hit is small (IMF WEO; Fed).",
           "Yen carry trade: when the BoJ rises versus the Fed, the yen strengthens about 4% per point. A big jump forces investors to sell borrowed-yen bets, hitting stocks and the AUD (as in August 2024).",
           "AUD: 10% on commodity prices moves it about 4%; each point the RBA rises versus the Fed adds about 3% (RBA).",
           "AI and interest rates: half of any extra AI growth is added to the 10-year yield, so faster productivity raises borrowing costs and offsets part of the budget gain.",
-          "Migration: aggregate GDP moves with the number of workers; GDP per person moves much less and its sign is contested (-0.1 to +0.25 per point, middle +0.1; Productivity Commission 2016). The budget effect depends on migrant mix (low view 0.4x, high 1.6x). Housing: more people than homes raises rents 1 to 2.5% per 1% gap (middle 1.75), and supply closes about 20% of the gap a year.",
+          "Migration: aggregate GDP moves with the number of workers; GDP per person moves much less and its sign is contested (-0.1 to +0.25 per point, middle +0.1; Productivity Commission 2016). The budget effect depends on migrant mix (low view 0.4x, high 1.6x). Housing: more people than homes raises rents 1 to 2.5% per 1% gap (middle 1.75), and supply closes about 20% of the gap a year. Not yet reconciled: at the middle setting a -0.5 point migration cut costs the budget about A$16bn a year on average over 10 years in this engine, below the $28.3bn a year estimate in the estimates block and the $275bn of extra debt reported by The Age.",
           "Taylor rule toggle: each bank moves 0.75 times its inflation gap plus 0.5 times its growth gap the next year.",
-          "Stocks: a rough direction guide only, built from growth, yields and shocks.",
+          "Stocks: a rough direction guide only, built from growth, yields and shocks. Any big oil move, up or down, takes a one-off volatility penalty in year 1. A Fed cut much larger than the BoJ's triggers the yen carry-trade channel above, so stocks can fall even though rates are cut.",
+          "Debt early on: deficit-financed spending can lower US debt as a share of GDP in years 1 and 2, because the spending multiplier lifts nominal GDP faster than borrowing at first. Many official dynamic analyses show debt rising from year 1.",
           "Year-1 calibration: the no-change path starts 2027 at the average of the CBO, IMF, OECD and RBA forecasts (see Calibration check), then drifts to the long-run anchors.",
           "Policy end date: budget and tariff changes stay for the chosen number of years, then phase out in straight steps over 5 years, so nothing falls off a cliff.",
           "Taylor smoothing: with the Taylor toggle on, each bank moves only half way to the rule's rate each year, and its reaction is capped at 3 points either side of the no-change rate.",
@@ -1258,7 +1291,7 @@ export default function App() {
           "How it works: a no-change path starts from the latest official data, anchored in 2027 to the average of CBO, IMF, OECD and RBA forecasts, then drifts to long-run trends. Each lever adds an effect with a published size and a time shape (fades, lags or ramps). Debt follows the standard rule: next year's debt = this year's debt x (1 + interest) / (1 + growth) + primary deficit.",
           "Same method for every party: party presets are just lever settings taken from their stated plans and costings. Where a party has no stated position, the lever stays at no change. Presets never move central-bank rates.",
           "Calibrated, not validated: the no-change path is anchored to official 2027 forecasts. Policy responses are illustrative; see Backtests for three rough checks against history.",
-          "Ranges: every result is shown with a low-impact (half) and high-impact (one-and-a-half times) view, because economists disagree about the size of these effects.",
+          "Ranges: every result is shown with a low-impact (half) and high-impact (one-and-a-half times) view, because economists disagree about the size of these effects. Effects are not always monotonic in that scale (feedbacks can offset), so each range shows the lowest and highest of the low, middle and high runs.",
           "Limitations: no financial crises, elections, wars or pandemics unless you add a shock; no state or regional detail; trade and exchange rates are simplified; sectors use fixed sensitivities, not a full input-output model; long horizons (decades) mostly show where the assumptions lead, not what will happen.",
           "Known quirk: with no change at all, US debt keeps rising for decades because the US runs a permanent primary deficit. That is the CBO's message too, not a bug.",
           "Testing: the engine is checked over every preset, party, AI scenario and extreme setting, every horizon up to 100 years, with and without the Taylor rule, for finite values, plausible ranges, no sudden jumps and steady long-run behaviour. These checks show the numbers do not break; they do not show the economics is right.",
@@ -1348,9 +1381,9 @@ export default function App() {
       </Section>
       </>)}
       <BackToTop />
-      <Floating edge="top" bar>
+      {!narrow && <Floating edge="top" bar>
         <Select label="Go to" value={tab} onChange={(v: string) => setTab(v)} options={TABS} />
-      </Floating>
+      </Floating>}
     </Page>
   );
 }
@@ -1397,7 +1430,11 @@ function marginal(inc: number, low: number): number {
   if (inc <= 190000) return 0.37;
   return 0.45;
 }
-function helpRate(inc: number): number { return inc <= 67000 ? 0 : inc <= 125000 ? 0.15 : 0.17; }
+// HELP 2026-27 (ATO): nil to $69,528; 15c per $ to $129,717; then $9,028 + 17c; 10% of total income from $186,051 (marginal rate 10% there)
+function helpRate(inc: number): number { return inc <= 69528 ? 0 : inc <= 129717 ? 0.15 : inc < 186051 ? 0.17 : 0.10; }
+// Medicare levy 2025-26 (ATO): nil to the lower threshold, 10% of income above it until 2% of income applies (upper threshold). SAPTO thresholds for seniors and pensioners.
+function medicare(inc: number, senior: boolean): number { const lo = senior ? 44268 : 28011; return inc <= lo ? 0 : Math.min(0.1 * (inc - lo), 0.02 * inc); }
+function medicareRate(inc: number, senior: boolean): number { const lo = senior ? 44268 : 28011, hi = senior ? 55335 : 35013; return inc <= lo ? 0 : inc < hi ? 0.1 : 0.02; }
 const moneyAU = (n: number) => (n < 0 ? "−$" : "$") + Math.round(Math.abs(n)).toLocaleString("en-AU");
 
 function HouseholdAUTab() {
@@ -1422,6 +1459,7 @@ function HouseholdAUTab() {
   const noLabourDefault = ["retiree", "student", "smb"].includes(occ);
   const labour = Math.min(income, labStr.trim() === "" ? (noLabourDefault ? 0 : income) : Math.max(0, Number(labStr) || 0));
   const isAppr = occ === "appr";
+  const senior = occ === "retiree"; // retiree profile uses the SAPTO Medicare thresholds
 
   const calc = useMemo(() => {
     const rows: { fy: string; inc: number; labMid: number; labLow: number; labHigh: number; avgRate: number; emtr: number }[] = [];
@@ -1435,18 +1473,19 @@ function HouseholdAUTab() {
       const netLab = Math.max(0, lab - dedAmt);
       const wato = i >= 1 && netLab > 18200 ? Math.min(250, incomeTax(netLab, low)) : 0;
       const appr = isAppr ? [2000, 2000, 2000, 2000][i] : 0;
-      const t = incomeTax(inc, low) + (inc > 27222 ? inc * 0.02 : 0) - wato;
-      const emtr = marginal(inc, low) + (inc > 27222 ? 0.02 : 0) + (helpDebt > 0 ? helpRate(inc) : 0);
-      rows.push({ fy: FY_AU[i], inc, labLow: cut + appr, labMid: cut + wato + appr + ded / 2, labHigh: cut + wato + appr + ded, avgRate: inc > 0 ? t / inc : 0, emtr });
+      const t = incomeTax(inc, low) + medicare(inc, senior) - wato;
+      const emtr = marginal(inc, low) + medicareRate(inc, senior) + (helpDebt > 0 ? helpRate(inc) : 0);
+      rows.push({ fy: FY_AU[i], inc, labLow: cut + wato + appr, labMid: cut + wato + appr + ded / 2, labHigh: cut + wato + appr + ded, avgRate: inc > 0 ? t / inc : 0, emtr });
     }
     return rows;
-  }, [income, labour, occ, years, g, isAppr, helpDebt]);
+  }, [income, labour, occ, years, g, isAppr, helpDebt, senior]);
 
   const sum = (k: "labLow" | "labMid" | "labHigh") => calc.reduce((a, r) => a + r[k], 0);
   const greensLow = helpDebt;
   const greensHigh = helpDebt + childcare * years;
+  const greens26 = Math.min(Math.max(income - 18200, 0), 26000 - 18200) * 0.14; // 2026 proposal: tax-free threshold to $26,000 at the 14% rate
 
-  const coalitionUCB = [-5.7, -4.8, 7.5, 9.5];
+  const coalitionUCB = [-5.7, -4.8, 7.5, 9.5]; // PBO underlying cash balance sign (+ = improves); shown as + = cost
   const coalYrs = Math.min(years, 3);
   const coalH = coalitionUCB.slice(1, 1 + coalYrs).reduce((a, b) => a + b, 0);
 
@@ -1454,7 +1493,7 @@ function HouseholdAUTab() {
     <>
       <TableOfContents items={[{ label: "Your profile" }, { label: "Time frame" }, { label: "1. Take-home pay" }, { label: "2. Cost of living" }, { label: "3. Jobs and wages evidence" }, { label: "4. Budget and debt" }, { label: "Policies by party" }, { label: "Range of expert views" }, { label: "Factors you may not have considered" }, { label: "Methodology and limitations" }, { label: "Learn more" }, { label: "Ideas to reduce bias further" }, { label: "Sources" }]} />
 
-      <Callout tone="info" lead="What this covers, as of 3 Nov 2026">The next federal election is due by 2028, and no party has released a new platform yet. So this uses the latest written platforms with independent costings, from the 2025 election (PBO 2025 Election Commitments Report), plus Labor's laws passed since then as the governing party. Coalition and Greens figures are 2025 proposals that were not enacted. One Nation was not costed by the PBO, so its items are listed as uncosted.</Callout>
+      <Callout tone="info" lead="What this covers, as of 9 Nov 2026">The next federal election is due by 2028. 2026 proposals have been announced (Coalition 26 Oct; Greens 27 to 28 Oct) and are shown as separate rows labelled "proposal". The totals still use the latest written platforms with independent costings, from the 2025 election (PBO 2025 Election Commitments Report), plus Labor's laws passed since then as the governing party; those 2025 platforms are kept as history. One Nation has one PBO-analysed item (defence to 3.5% of GDP, +$225bn over 10 years, SMH 21 Jun 2026) and no PBO costing of its household measures, so those are listed as uncosted.</Callout>
 
       <Section heading="Your profile">
         <Grid columns={3}>
@@ -1489,13 +1528,15 @@ function HouseholdAUTab() {
         <Table columns={["Party", "Change over " + years + " yrs", "Range", "How sure"]} rows={[
           ["Coalition (2025 platform)", "$0 in this window", "$0", "Its costed household measures (Cost of Living Tax Offset up to $1,200; fuel excise halved) applied to 2025–26 only"],
           ["Greens (2025 platform)", moneyAU(greensLow) + " HELP debt removed (one-off)", moneyAU(greensLow) + " to " + moneyAU(greensHigh) + " incl. free childcare", "PBO-costed proposal, not enacted; dental, rent freeze and other items not costed per household. Childcare figure = your yearly out-of-pocket cost × years selected; assumes a child in care for every year and care within 50 hrs/week (PBO ECR-2025-3025, ongoing, costed to 2035–36). A 2025 proposal, not law; any start would follow a future election."],
+          ["Coalition (2026 proposal, 26 Oct)", "$0 in this window", "n/a", "Proposal; party costing (not PBO). The Tax Back Guarantee ($250 rising to $500, $750, $1,000) replaces WATO ($250) from 2029–30 (party Table 1), so it changes nothing to 2028–29. Not in totals."],
+          ["Greens (2026 proposal, 27 Oct)", "Up to " + moneyAU(greens26) + " a year once in effect", "n/a", "Proposal; PBO costing ($22bn a year, ABC 27 Oct 2026). Tax-free threshold to $26,000: up to $1,092 a year ((26,000 − 18,200) × 14%). No start date set, so not in totals."],
           ["Independent (Dr Helen Haines, Indi)", "Not modelled", "n/a", "15 regional commitments in PBO report; none are household tax or payment changes"],
-          ["Labor (governing; enacted law)", moneyAU(sum("labMid")), moneyAU(sum("labLow")) + " to " + moneyAU(sum("labHigh")), "Enacted law; range is how much of the $1,000 deduction you'd use"],
+          ["Labor (governing; enacted law)", moneyAU(sum("labMid")), moneyAU(sum("labLow")) + " to " + moneyAU(sum("labHigh")), "Enacted law; includes WATO; range is how much of the $1,000 deduction you'd use"],
           ["One Nation", "Uncosted", "n/a", "No PBO costing; excluded from totals"],
         ]} />
         <Table columns={["Year", "Income", "Labor tax change (mid)", "Average tax rate", "Effective marginal rate"]} rows={calc.map((r) => [r.fy, moneyAU(r.inc), moneyAU(r.labMid), (r.avgRate * 100).toFixed(1) + "%", (r.emtr * 100).toFixed(0) + "%"])} />
         <Text>Labor's figures are compared with the old 16% rate. The 2026–27 rate is 15%, then 14% from 2027–28. They include the Working Australians Tax Offset (up to $250 from 2027–28) and the $1,000 instant work-expense deduction from 2026–27. Both use the labour income you enter, not total income (ATO). The deduction is the lower of $1,000 and your labour income, and it isn't available on business income only, so it is $0 for the small business owner profile. The offset needs net labour income (labour income minus the deduction) above the $18,200 tax-free threshold and can't exceed the tax on that income. The deduction is worth $0 if you already claim $1,000 or more in expenses, and up to its full amount times your marginal rate if you claim nothing, so the middle figure assumes half. Retiree, student and small business profiles default to $0 labour income; enter yours if you have wages. Apprentice payments are included for the apprentice profile, assuming the apprenticeship started 1 July 2025.</Text>
-        <Text>Bracket creep: the thresholds aren't indexed, so the average tax rate rises as wages grow. The effective marginal rate adds the 2% Medicare levy and, if you have a HELP balance, the HELP repayment rate (15% above $67,000, 17% above $125,000). The Medicare levy low-income reduction is approximated with a single cut-off.</Text>
+        <Text>Bracket creep: the thresholds aren't indexed, so the average tax rate rises as wages grow. The effective marginal rate adds the 2% Medicare levy and, if you have a HELP balance, the HELP repayment rate for 2026–27 (15% above $69,528, 17% above $129,717, then 10% of total income from $186,051). The Medicare levy uses the 2025–26 low-income thresholds ($28,011 to $35,013, phased in at 10%; $44,268 to $55,335 for the retiree profile under SAPTO).</Text>
       </Section>
 
       <Section heading="2. Cost of living">
@@ -1520,15 +1561,15 @@ function HouseholdAUTab() {
       </Section>
 
       <Section heading="4. Budget and debt">
-        <Table columns={["Party (2025 platform vs PEFO)", "4-yr forward estimates", "To 2035–36", "Gross debt 2035–36", "Debt interest"]} rows={[
-          ["Coalition", "+$6.6bn", "−$135.6bn", "+$147.3bn ($1.7tn, 35.1% of GDP)", "−$21.6bn"],
-          ["Greens", "−$5.2bn", "−$343.1bn", "+$703.0bn ($2.2tn, 46.9% of GDP)", "+$136.4bn"],
-          ["Labor", "+$1.0bn", "+$4.4bn", "−$1.9bn ($1.5tn, 31.9% of GDP)", "Not materially different"],
+        <Table columns={["Party (2025 platform vs PEFO; + = cost)", "4-yr forward estimates", "To 2035–36", "Gross debt 2035–36", "Debt interest"]} rows={[
+          ["Coalition", "−$6.6bn", "+$135.6bn", "+$147.3bn ($1.7tn, 35.1% of GDP)", "+$21.6bn"],
+          ["Greens", "+$5.2bn", "+$343.1bn", "+$703.0bn ($2.2tn, 46.9% of GDP)", "+$136.4bn"],
+          ["Labor", "−$1.0bn", "−$4.4bn", "−$1.9bn ($1.5tn, 31.9% of GDP)", "Not materially different"],
           ["One Nation", "Uncosted", "Uncosted", "n/a", "n/a"],
         ]} />
-        <Text>{"Selected horizon (" + years + " yrs): the PBO publishes year-by-year figures for the Coalition. From 2026–27, to match the household figures, they add up to " + (coalH >= 0 ? "+" : "−") + "$" + Math.abs(coalH).toFixed(1) + "bn over " + coalYrs + (coalYrs === 1 ? " year" : " years") + " (2026–27 to " + ["2026–27", "2027–28", "2028–29"][coalYrs - 1] + ")." + (years === 4 ? " 2029–30 is not published year by year: it is only in the PBO medium-term total to 2035–36." : "") + " The chart also shows 2025–26, which is outside this window. For Labor and the Greens, only the 4-year and medium-term totals are shown. Positive figures improve the underlying cash balance. Intergenerational effect: higher debt means more interest paid by future taxpayers, shown in the last column."}</Text>
+        <Text>{"Selected horizon (" + years + " yrs): the PBO publishes year-by-year figures for the Coalition. From 2026–27, to match the household figures, they add up to " + (-coalH >= 0 ? "+" : "−") + "$" + Math.abs(coalH).toFixed(1) + "bn over " + coalYrs + (coalYrs === 1 ? " year" : " years") + " (2026–27 to " + ["2026–27", "2027–28", "2028–29"][coalYrs - 1] + ")." + (years === 4 ? " 2029–30 is not published year by year: it is only in the PBO medium-term total to 2035–36." : "") + " The chart also shows 2025–26, which is outside this window. For Labor and the Greens, only the 4-year and medium-term totals are shown. Sign convention, as in the estimates block: + = cost to the budget (a worse underlying cash balance, more debt or more interest); − = saving. Intergenerational effect: higher debt means more interest paid by future taxpayers, shown in the last column."}</Text>
         <Text>Current baseline: 2026–27 Budget deficit $31.5bn (1.0% of GDP); net debt 19.9% and gross debt 34.0% of GDP at 30 June 2027 (Budget Paper No. 1, 12 May 2026).</Text>
-        <ColumnSeries labels={["2025–26 (outside window)", "2026–27", "2027–28", "2028–29"]} series={[{ name: "Coalition yearly budget impact, $bn", values: coalitionUCB }]} />
+        <ColumnSeries labels={["2025–26 (outside window)", "2026–27", "2027–28", "2028–29"]} series={[{ name: "Coalition yearly budget cost, $bn (+ = cost)", values: coalitionUCB.map((v: number) => -v) }]} />
       </Section>
 
       <Section heading="Policies by party">
@@ -1544,7 +1585,7 @@ function HouseholdAUTab() {
           ["Greens", "Rent freeze, then capped increases", "Uncosted per household", "No"],
           ["Labor", "Tax rate 16% to 15% (2026–27) to 14% (2027–28)", "Enacted", "Yes"],
           ["Labor", "$1,000 standard deduction (2026–27); WATO up to $250 (2027–28)", "Enacted", "Yes"],
-          ["Labor", "20% HELP cut; repayment threshold $67,000, marginal system", "Enacted (2025)", "In marginal rate only"],
+          ["Labor", "20% HELP cut; repayment threshold $69,528 (2026–27), marginal system", "Enacted (2025)", "In marginal rate only"],
           ["Labor", "Instant asset write-off $20,000 (extended into 2025–26)", "Announced and extended", "No"],
           ["Labor", "Key Apprenticeship Program $10,000 (housing construction)", "In effect from 1 July 2025", "Yes, apprentice profile"],
           ["Labor", "Negative gearing and CGT changes from 1 July 2027", "Enacted", "No (investor-specific)"],
@@ -1595,7 +1636,7 @@ function HouseholdAUTab() {
           { label: "Uncosted", value: "Listed, but left out of every total" },
           { label: "Money only", value: "Service quality, wait times, the environment and wellbeing aren't measured" },
           { label: "Income data", value: "ATO medians are for 2022–23 and haven't been adjusted for wage growth since" },
-          { label: "Simplifications", value: "Single taxpayer; Medicare levy low-income phase-in simplified; WATO taper not modelled; state policies excluded" },
+          { label: "Simplifications", value: "Single taxpayer; Medicare levy family thresholds not modelled; WATO taper not modelled; state policies excluded" },
           { label: "Party order", value: "Alphabetical" },
         ]} />
       </Section>
@@ -1605,7 +1646,7 @@ function HouseholdAUTab() {
           { title: "PBO 2025 Election Commitments Report", site: "Parliamentary Budget Office", href: "https://www.pbo.gov.au/elections/2025-general-election/2025-election-commitments-report" },
           { title: "Grattan Institute", site: "grattan.edu.au", href: "https://grattan.edu.au/report/budget-reboot-how-to-fund-australias-future/" },
           { title: "e61 Institute", site: "e61.in", href: "https://e61.in/wp-content/uploads/2026/09/How-many-housing-investors-pay-more-tax-under-the-reforms.pdf" },
-          { title: "ANU Tax and Transfer Policy Institute", site: "anu.edu.au", href: "https://taxpolicy.crawford.anu.edu.au/" },
+          { title: "ANU Tax and Transfer Policy Institute", site: "anu.edu.au", href: "https://crawford.anu.edu.au/ttpi/research" },
           { title: "RBA education", site: "Reserve Bank of Australia", href: "https://www.rba.gov.au/education/resources/explainers/" },
           { title: "Productivity Commission", site: "pc.gov.au", href: "https://www.pc.gov.au/inquiries-and-research/" },
           { title: "Treasury: 2026–27 tax changes", site: "treasury.gov.au", href: "https://treasury.gov.au/policy-topics/taxation/budget2026-27" },
@@ -1651,7 +1692,7 @@ function HouseholdAUTab() {
   );
 }
 
-const EST_DATA: any[] = [{"id":"rep.further-tax-cuts","label":"Republicans: further tax cuts (estimate)","low":0.0,"central":0.038,"high":1.424,"unit":"% GDP/yr","central_bn":12.6,"bn_unit":"USD bn/yr","source_url":"https://www.crfb.org/blogs/obbba-dynamic-score-comes-47-trillion","orientation":"Committee for a Responsible Federal Budget: nonpartisan, fiscal-restraint focus","as_of":"2026-03-11","retrieved":"2026-11-03","confidence":"very low","is_program_size":false},{"id":"rep.deregulation","policy_source_url":"https://prod-static.gop.com/media/RNC2024-Platform.pdf","label":"Republicans: deregulation (estimate)","low":-0.061,"central":0.0,"high":0.061,"unit":"% GDP/yr","central_bn":0,"bn_unit":"USD bn/yr","source_url":"","orientation":"n/a","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false},{"id":"rep.energy-supply-plans","policy_source_url":"https://prod-static.gop.com/media/RNC2024-Platform.pdf","label":"Republicans: energy-supply plans (estimate)","low":-0.03,"central":-0.006,"high":0.015,"unit":"% GDP/yr","central_bn":-2,"bn_unit":"USD bn/yr","source_url":"","orientation":"n/a","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false},{"id":"dem.drug-price-bills","label":"Democrats: drug-price bills (estimate)","low":-0.072,"central":-0.03,"high":0.0,"unit":"% GDP/yr","central_bn":-9.85,"bn_unit":"USD bn/yr","source_url":"https://www.kff.org/medicare/explaining-the-prescription-drug-provisions-in-the-inflation-reduction-act/","orientation":"KFF: nonpartisan health-policy research; figures are CBO's","as_of":"2022-08 (CBO); CRFB 2026-08-05","retrieved":"2026-11-03","confidence":"low","is_program_size":false},{"id":"dem.grocery-pricing-bills","policy_source_url":"https://www.congress.gov/bill/119th-congress/senate-bill/3892/all-info","label":"Democrats: grocery-pricing bills (estimate)","low":-0.003,"central":0.0,"high":0.003,"unit":"% GDP/yr","central_bn":0,"bn_unit":"USD bn/yr","source_url":"","orientation":"n/a","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false},{"id":"lnp.repeal-capital-gains-trust-and-negative-gearing-changes","label":"Coalition: repeal Labor CGT, trust and negative gearing changes (estimate)","low":0.066,"central":0.265,"high":0.278,"unit":"% GDP/yr","central_bn":8.0,"bn_unit":"AUD bn/yr","source_url":"https://budget.gov.au/content/bp1/download/bp1_2026-27.pdf","orientation":"Treasury (official)","as_of":"2026-05-12 (Budget)","retrieved":"2026-11-03","confidence":"medium","is_program_size":false},{"id":"lnp.spending-cap","policy_source_url":"https://www.liberal.org.au/2026/10/26/coalition-will-cut-labors-waste-cut-taxes-and-tackle-the-cost-of-living","label":"Coalition: spending cap (estimate)","low":-0.298,"central":0.0,"high":0.0,"unit":"% GDP/yr","central_bn":0,"bn_unit":"AUD bn/yr","source_url":"","orientation":"n/a","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false},{"id":"lnp.surplus-target","policy_source_url":"https://www.liberal.org.au/2026/10/26/coalition-will-cut-labors-waste-cut-taxes-and-tackle-the-cost-of-living","label":"Coalition: surplus target (estimate)","low":-0.497,"central":0.0,"high":0.0,"unit":"% GDP/yr","central_bn":0,"bn_unit":"AUD bn/yr","source_url":"https://budget.gov.au/content/bp1/download/bp1_2026-27.pdf","orientation":"Treasury (official)","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false},{"id":"grn.carbon-price","label":"Greens: carbon price ($100/t levy on facilities ≥25kt) (estimate)","low":-0.828,"central":-0.596,"high":-0.033,"unit":"% GDP/yr","central_bn":-18,"bn_unit":"AUD bn/yr","source_url":"https://www.dcceew.gov.au/sites/default/files/documents/quarterly-update-australias-national-greenhouse-gas-inventory-dec-2025.pdf","orientation":"DCCEEW (official data)","as_of":"2025-12 (inventory)","retrieved":"2026-11-03","confidence":"very low","is_program_size":false},{"id":"grn.public-housing","label":"Greens: government-owned property developer (estimate)","low":0.132,"central":0.132,"high":1.02,"unit":"% GDP/yr","central_bn":4.0,"bn_unit":"AUD bn/yr","source_url":"https://www.abc.net.au/news/2024-10-04/greens-public-property-developer-costing-40-billion/104428086","orientation":"PBO via ABC News","as_of":"2024-10-04 / PBO 2025 ECR","retrieved":"2026-11-03","confidence":"medium","is_program_size":false},{"id":"grn.rent-controls","policy_source_url":"https://greens.org.au/news/media-release/housing-battle-lines-drawn-labor-tinkers-while-prices-soar-dutton-sends-prices","label":"Greens: rent controls (estimate)","low":0.0,"central":0.01,"high":0.033,"unit":"% GDP/yr","central_bn":0.3,"bn_unit":"AUD bn/yr","source_url":"","orientation":"n/a","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false},{"id":"onp.abolish-climate-department","policy_source_url":"https://www.onenation.org.au/slash-waste","label":"One Nation: abolish climate department (estimate)","low":-0.032,"central":-0.017,"high":-0.007,"unit":"% GDP/yr","central_bn":-0.5,"bn_unit":"AUD bn/yr","source_url":"https://budget.gov.au/content/bp4/download/bp4_11_part_3_expenses_and_net_capital_investment.pdf","orientation":"Treasury/Finance (official)","as_of":"2026-05-12","retrieved":"2026-11-03","confidence":"low","is_program_size":false},{"id":"onp.scrap-sbs","label":"One Nation: scrap SBS funding (estimate)","low":-0.012,"central":-0.012,"high":-0.01,"unit":"% GDP/yr","central_bn":-0.35,"bn_unit":"AUD bn/yr","source_url":"https://www.sbs.com.au/aboutus/wp-content/uploads/2025/08/SBS-Corporate-Plan-2025-26.pdf","orientation":"SBS (official)","as_of":"2026-02 (PAES)","retrieved":"2026-11-03","confidence":"medium","is_program_size":false},{"id":"onp.cut-abc-funding","label":"One Nation: cut ABC funding (regional-only role) (estimate)","low":-0.03,"central":-0.02,"high":-0.01,"unit":"% GDP/yr","central_bn":-0.61,"bn_unit":"AUD bn/yr","source_url":"https://www.infrastructure.gov.au/sites/default/files/documents/2025-26_infra_pbs_03_abc.pdf","orientation":"Dept of Infrastructure PBS (official)","as_of":"2025-26 PBS","retrieved":"2026-11-03","confidence":"low","is_program_size":false},{"id":"onp.cut-some-indigenous-program-funding","label":"One Nation: cut Indigenous program funding (estimate)","low":-0.414,"central":-0.099,"high":-0.01,"unit":"% GDP/yr","central_bn":-3.0,"bn_unit":"AUD bn/yr","source_url":"https://www.onenation.org.au/audit-indigenous-spending-to-close-the-gaps","orientation":"One Nation (party claim) + ANAO (official)","as_of":"2026-27","retrieved":"2026-11-03","confidence":"low","is_program_size":false},{"id":"onp.end-health-and-education-duplication","label":"One Nation: end health/education duplication (estimate)","low":-0.013,"central":-0.007,"high":-0.003,"unit":"% GDP/yr","central_bn":-0.2,"bn_unit":"AUD bn/yr","source_url":"https://www.onenation.org.au/slash-waste","policy_source_url":"https://www.onenation.org.au/slash-waste","orientation":"One Nation (party): review of federal Education and Housing departments to eliminate duplication; no costing","as_of":"2026-11-03","retrieved":"2026-11-03 (policy only; no cost source)","confidence":"very low","is_program_size":false},{"id":"onp.fuel-excise-halving","label":"One Nation: halve fuel excise (estimate)","low":5.5,"central":6.0,"high":6.5,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.pbo.gov.au/elections/2025-general-election/2025-election-commitments-costings/adjust-fuel-excise-25c-litre-reduction","orientation":"PBO (independent, official)","as_of":"2025 election","retrieved":"2026-11-03","confidence":"medium","is_program_size":false,"page":"explorer"},{"id":"onp.income-splitting","label":"One Nation: income splitting for couples with dependants (estimate)","low":5.9,"central":12.4,"high":12.4,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.pbo.gov.au/publications-and-data/publications/costings/allow-income-splitting-couples-least-1-dependent-child","orientation":"PBO (independent, official)","as_of":"2025-03-13","retrieved":"2026-11-03","confidence":"medium","is_program_size":false,"page":"explorer"},{"id":"onp.no-gst-on-insurance","label":"One Nation: no GST on insurance (estimate)","low":2.0,"central":3.0,"high":3.5,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.onenation.org.au/insurance-gst-exempt","orientation":"One Nation (party claim)","as_of":"2026","retrieved":"2026-11-03","confidence":"low","is_program_size":false,"page":"explorer"},{"id":"onp.retiree-threshold","label":"One Nation: $35,000 tax-free threshold for self-funded retirees 67+ (estimate)","low":0.5,"central":1.5,"high":3.0,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.onenation.org.au/fair-tax-for-retirees","orientation":"One Nation (party)","as_of":"2026","retrieved":"2026-11-03 (design only; no cost source)","confidence":"very low","is_program_size":false,"page":"explorer"},{"id":"onp.defence-3-5pct","label":"One Nation: defence to 3.5% GDP (estimate)","low":10,"central":22.5,"high":35,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.smh.com.au/politics/federal/pauline-hanson-s-defence-spending-boost-would-cost-extra-225b-budget-office-says-20260621-p608p2.html","orientation":"PBO analysis via SMH","as_of":"2026-06-21","retrieved":"2026-11-03","confidence":"medium","is_program_size":false,"page":"explorer"},{"id":"onp.migration-cut","label":"One Nation: migration cut (budget effect) (estimate)","low":15,"central":28.3,"high":40,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.theage.com.au/politics/federal/how-one-nation-s-negative-migration-plans-would-drive-up-debt-by-275b-20261018-p61575.html","orientation":"Journalist analysis with PBO Build your own Budget tool (indicative)","as_of":"2026-10-18","retrieved":"2026-11-03","confidence":"low","is_program_size":false,"page":"explorer"},{"id":"lnp.nuclear","label":"Coalition: nuclear plan (system cost, not budget) (estimate)","low":13.2,"central":17.8,"high":32.8,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.climatecouncil.org.au/resources/economic-meltdown-counting-the-real-cost-of-peter-duttons-nuclear-fantasy/","orientation":"Frontier Economics (commissioned by the Coalition); Climate Council (climate advocacy)","as_of":"2024-12 / 2025","retrieved":"2026-11-03","confidence":"low","is_program_size":false,"page":"explorer"},{"id":"lnp.gas-reservation","policy_source_url":"https://www.nationals.org.au/election-policies/our-plan-to-deliver-australian-gas-for-australians","label":"Coalition: gas reservation (estimate)","low":0,"central":0,"high":0.5,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"","orientation":"n/a","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false,"page":"explorer"},{"id":"grn.rent-freeze","label":"Greens: rent freeze (household saving) (estimate)","low":0,"central":1100,"high":3000,"unit":"AUD per household/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.cotality.com/au/insights/articles/rental-growth-loses-momentum-as-vacancy-rates-rise","policy_source_url":"https://greens.org.au/news/media-release/housing-battle-lines-drawn-labor-tinkers-while-prices-soar-dutton-sends-prices","orientation":"Cotality (industry data): median rent $713/wk, Sep qtr 2026, +5.5% y/y (alt: REA $675/wk)","as_of":"2026-10-09 (Sep qtr 2026)","retrieved":"2026-11-03","confidence":"low","is_program_size":false,"page":"explorer"},{"id":"grn.dental-medicare","label":"Greens: dental in Medicare (estimate)","low":14.0,"central":19.6,"high":19.6,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.pbo.gov.au/elections/2025-general-election/2025-election-commitments-costings/cover-dental-under-medicare","orientation":"PBO (independent, official)","as_of":"2025 election","retrieved":"2026-11-03","confidence":"medium","is_program_size":false,"page":"explorer"},{"id":"haines.regional","label":"Independent (Haines): 15 regional commitments (estimate)","low":1.34,"central":2.05,"high":2.05,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.pbo.gov.au/elections/2025-general-election/2025-election-commitments-report/independent-member-Indi","orientation":"PBO (independent, official)","as_of":"2025 ECR","retrieved":"2026-11-03","confidence":"medium","is_program_size":false,"page":"explorer"},{"id":"baseline.family-tax-benefit","label":"Family Tax Benefit A+B (program size) (estimate)","low":18.15,"central":18.15,"high":18.15,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.dss.gov.au/system/files/documents/2026-05/portfolio-budget-statements-2026-27-social-services.pdf","orientation":"Official Budget data: DSS PBS 2026-27 Program 1.1 (A 14.119 + B 4.031)","as_of":"2026-05-12 (Budget)","retrieved":"2026-11-03","confidence":"high","is_program_size":true,"page":"explorer"},{"id":"baseline.child-care-subsidy","label":"Child Care Subsidy (program size) (estimate)","low":16.917,"central":16.917,"high":16.917,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.education.gov.au/download/20342/2026-27-education-portfolio-budget-statements/44709/2026-27-education-portfolio-budget-statements/pdf","orientation":"Official Budget data: Education PBS 2026-27 Program 1.2","as_of":"2026-05-12 (Budget)","retrieved":"2026-11-03","confidence":"high","is_program_size":true,"page":"explorer"},{"id":"baseline.age-pension","label":"Age Pension (program size) (estimate)","low":68.67,"central":68.67,"high":68.67,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.dss.gov.au/system/files/documents/2026-05/portfolio-budget-statements-2026-27-social-services.pdf","orientation":"Official Budget data: DSS PBS 2026-27 Program 1.3","as_of":"2026-05-12 (Budget)","retrieved":"2026-11-03","confidence":"high","is_program_size":true,"page":"explorer"},{"id":"baseline.ndis","label":"NDIS (program size) (estimate)","low":56.124,"central":56.124,"high":56.124,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://budget.gov.au/content/bp1/download/bp1_bs-6.pdf","orientation":"Official Budget data: Budget Paper 1 2026-27 Statement 6 Table 6.1.3","as_of":"2026-05-12 (Budget)","retrieved":"2026-11-03","confidence":"high","is_program_size":true,"page":"explorer"},{"id":"state.policies","label":"State and territory policies (household) (estimate)","low":-2000,"central":0,"high":2000,"unit":"AUD per household/yr","central_bn":null,"bn_unit":null,"source_url":"","orientation":"n/a","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false,"page":"explorer"}];
+const EST_DATA: any[] = [{"id":"rep.further-tax-cuts","label":"Republicans: further tax cuts (estimate)","low":0.0,"central":0.038,"high":1.424,"unit":"% GDP/yr","central_bn":12.6,"bn_unit":"USD bn/yr","source_url":"https://www.crfb.org/blogs/obbba-dynamic-score-comes-47-trillion","orientation":"Committee for a Responsible Federal Budget: nonpartisan, fiscal-restraint focus","as_of":"2026-03-11","retrieved":"2026-11-03","confidence":"very low","is_program_size":false},{"id":"rep.deregulation","policy_source_url":"https://prod-static.gop.com/media/RNC2024-Platform.pdf","label":"Republicans: deregulation (estimate)","low":-0.061,"central":0.0,"high":0.061,"unit":"% GDP/yr","central_bn":0,"bn_unit":"USD bn/yr","source_url":"","orientation":"n/a","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false},{"id":"rep.energy-supply-plans","policy_source_url":"https://prod-static.gop.com/media/RNC2024-Platform.pdf","label":"Republicans: energy-supply plans (estimate)","low":-0.03,"central":-0.006,"high":0.015,"unit":"% GDP/yr","central_bn":-2,"bn_unit":"USD bn/yr","source_url":"","orientation":"n/a","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false},{"id":"dem.drug-price-bills","label":"Democrats: drug-price bills (estimate)","low":-0.072,"central":-0.03,"high":0.0,"unit":"% GDP/yr","central_bn":-9.85,"bn_unit":"USD bn/yr","source_url":"https://www.kff.org/medicare/explaining-the-prescription-drug-provisions-in-the-inflation-reduction-act/","orientation":"KFF: nonpartisan health-policy research; figures are CBO's","as_of":"2022-08 (CBO); CRFB 2026-08-05","retrieved":"2026-11-03","confidence":"low","is_program_size":false},{"id":"dem.grocery-pricing-bills","policy_source_url":"https://www.congress.gov/bill/119th-congress/senate-bill/3892/all-info","label":"Democrats: grocery-pricing bills (estimate)","low":-0.003,"central":0.0,"high":0.003,"unit":"% GDP/yr","central_bn":0,"bn_unit":"USD bn/yr","source_url":"","orientation":"n/a","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false},{"id":"lnp.repeal-capital-gains-trust-and-negative-gearing-changes","label":"Coalition: repeal Labor CGT, trust and negative gearing changes (estimate)","low":0.066,"central":0.265,"high":0.278,"unit":"% GDP/yr","central_bn":8.0,"bn_unit":"AUD bn/yr","source_url":"https://budget.gov.au/content/bp1/download/bp1_2026-27.pdf","orientation":"Treasury (official)","as_of":"2026-05-12 (Budget)","retrieved":"2026-11-03","confidence":"medium","is_program_size":false},{"id":"lnp.spending-cap","policy_source_url":"https://www.liberal.org.au/2026/10/26/coalition-will-cut-labors-waste-cut-taxes-and-tackle-the-cost-of-living","label":"Coalition: spending cap (estimate)","low":-0.298,"central":0.0,"high":0.0,"unit":"% GDP/yr","central_bn":0,"bn_unit":"AUD bn/yr","source_url":"","orientation":"n/a","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false},{"id":"lnp.surplus-target","policy_source_url":"https://www.liberal.org.au/2026/10/26/coalition-will-cut-labors-waste-cut-taxes-and-tackle-the-cost-of-living","label":"Coalition: surplus target (estimate)","low":-0.497,"central":0.0,"high":0.0,"unit":"% GDP/yr","central_bn":0,"bn_unit":"AUD bn/yr","source_url":"https://budget.gov.au/content/bp1/download/bp1_2026-27.pdf","orientation":"Treasury (official)","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false},{"id":"grn.carbon-price","label":"Greens: carbon price ($100/t levy on facilities ≥25kt) (estimate)","low":-0.579,"central":-0.57,"high":-0.497,"unit":"% GDP/yr","central_bn":-17.2,"bn_unit":"AUD bn/yr","source_url":"https://www.pbo.gov.au/elections/2025-general-election/2025-election-commitments-costings/powering-past-coal-and-gas-make-polluters-pay-damage-they-are-doing","orientation":"PBO (independent, official): ECR-2025-3365, standalone costing before interactions (ECR-2025-3901)","as_of":"2025-05 (PBO ECR-2025-3365)","retrieved":"2026-11-09","confidence":"medium","is_program_size":false},{"id":"grn.public-housing","label":"Greens: government-owned property developer (estimate)","low":0.132,"central":0.132,"high":1.02,"unit":"% GDP/yr","central_bn":4.0,"bn_unit":"AUD bn/yr","source_url":"https://www.abc.net.au/news/2024-10-04/greens-public-property-developer-costing-40-billion/104428086","orientation":"PBO via ABC News","as_of":"2024-10-04 / PBO 2025 ECR","retrieved":"2026-11-03","confidence":"medium","is_program_size":false},{"id":"grn.rent-controls","policy_source_url":"https://greens.org.au/news/media-release/housing-battle-lines-drawn-labor-tinkers-while-prices-soar-dutton-sends-prices","label":"Greens: rent controls (estimate)","low":0.0,"central":0.01,"high":0.033,"unit":"% GDP/yr","central_bn":0.3,"bn_unit":"AUD bn/yr","source_url":"","orientation":"n/a","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false},{"id":"onp.abolish-climate-department","policy_source_url":"https://www.onenation.org.au/slash-waste","label":"One Nation: abolish climate department (estimate)","low":-0.032,"central":-0.017,"high":-0.007,"unit":"% GDP/yr","central_bn":-0.5,"bn_unit":"AUD bn/yr","source_url":"https://budget.gov.au/content/bp4/download/bp4_11_part_3_expenses_and_net_capital_investment.pdf","orientation":"Treasury/Finance (official)","as_of":"2026-05-12","retrieved":"2026-11-03","confidence":"low","is_program_size":false},{"id":"onp.scrap-sbs","label":"One Nation: scrap SBS funding (estimate)","low":-0.012,"central":-0.012,"high":-0.01,"unit":"% GDP/yr","central_bn":-0.35,"bn_unit":"AUD bn/yr","source_url":"https://www.sbs.com.au/aboutus/wp-content/uploads/2025/08/SBS-Corporate-Plan-2025-26.pdf","orientation":"SBS (official)","as_of":"2026-02 (PAES)","retrieved":"2026-11-03","confidence":"medium","is_program_size":false},{"id":"onp.cut-abc-funding","label":"One Nation: cut ABC funding (regional-only role) (estimate)","low":-0.03,"central":-0.02,"high":-0.01,"unit":"% GDP/yr","central_bn":-0.61,"bn_unit":"AUD bn/yr","source_url":"https://www.infrastructure.gov.au/sites/default/files/documents/2025-26_infra_pbs_03_abc.pdf","orientation":"Dept of Infrastructure PBS (official)","as_of":"2025-26 PBS","retrieved":"2026-11-03","confidence":"low","is_program_size":false},{"id":"onp.cut-some-indigenous-program-funding","label":"One Nation: cut Indigenous program funding (estimate)","low":-0.414,"central":-0.099,"high":-0.01,"unit":"% GDP/yr","central_bn":-3.0,"bn_unit":"AUD bn/yr","source_url":"https://www.onenation.org.au/audit-indigenous-spending-to-close-the-gaps","orientation":"One Nation (party claim) + ANAO (official)","as_of":"2026-27","retrieved":"2026-11-03","confidence":"low","is_program_size":false},{"id":"onp.end-health-and-education-duplication","label":"One Nation: end health/education duplication (estimate)","low":-0.013,"central":-0.007,"high":-0.003,"unit":"% GDP/yr","central_bn":-0.2,"bn_unit":"AUD bn/yr","source_url":"https://www.onenation.org.au/slash-waste","policy_source_url":"https://www.onenation.org.au/slash-waste","orientation":"One Nation (party): review of federal Education and Housing departments to eliminate duplication; no costing","as_of":"2026-11-03","retrieved":"2026-11-03 (policy only; no cost source)","confidence":"very low","is_program_size":false},{"id":"onp.fuel-excise-halving","label":"One Nation: halve fuel excise (estimate)","low":5.5,"central":6.0,"high":6.5,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.pbo.gov.au/elections/2025-general-election/2025-election-commitments-costings/adjust-fuel-excise-25c-litre-reduction","orientation":"PBO (independent, official)","as_of":"2025 election","retrieved":"2026-11-03","confidence":"medium","is_program_size":false,"page":"explorer"},{"id":"onp.income-splitting","label":"One Nation: income splitting for couples with dependants (estimate)","low":5.9,"central":12.4,"high":12.4,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.pbo.gov.au/publications-and-data/publications/costings/allow-income-splitting-couples-least-1-dependent-child","orientation":"PBO (independent, official)","as_of":"2025-03-13","retrieved":"2026-11-03","confidence":"medium","is_program_size":false,"page":"explorer"},{"id":"onp.no-gst-on-insurance","label":"One Nation: no GST on insurance (estimate)","low":2.0,"central":3.0,"high":3.5,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.onenation.org.au/insurance-gst-exempt","orientation":"One Nation (party claim)","as_of":"2026","retrieved":"2026-11-03","confidence":"low","is_program_size":false,"page":"explorer"},{"id":"onp.retiree-threshold","label":"One Nation: $35,000 tax-free threshold for self-funded retirees 67+ (estimate)","low":0.5,"central":1.5,"high":3.0,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.onenation.org.au/fair-tax-for-retirees","orientation":"One Nation (party)","as_of":"2026","retrieved":"2026-11-03 (design only; no cost source)","confidence":"very low","is_program_size":false,"page":"explorer"},{"id":"onp.defence-3-5pct","label":"One Nation: defence to 3.5% GDP (estimate)","low":10,"central":22.5,"high":35,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.smh.com.au/politics/federal/pauline-hanson-s-defence-spending-boost-would-cost-extra-225b-budget-office-says-20260621-p608p2.html","orientation":"PBO analysis via SMH","as_of":"2026-06-21","retrieved":"2026-11-03","confidence":"medium","is_program_size":false,"page":"explorer"},{"id":"onp.migration-cut","label":"One Nation: migration cut (budget effect) (estimate)","low":15,"central":28.3,"high":40,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.theage.com.au/politics/federal/how-one-nation-s-negative-migration-plans-would-drive-up-debt-by-275b-20261018-p61575.html","orientation":"Journalist analysis with PBO Build your own Budget tool (indicative)","as_of":"2026-10-18","retrieved":"2026-11-03","confidence":"low","is_program_size":false,"page":"explorer"},{"id":"lnp.nuclear","label":"Coalition: nuclear plan (system cost, not budget) (estimate)","low":13.2,"central":17.8,"high":32.8,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.climatecouncil.org.au/resources/economic-meltdown-counting-the-real-cost-of-peter-duttons-nuclear-fantasy/","orientation":"Frontier Economics (commissioned by the Coalition); Climate Council (climate advocacy)","as_of":"2024-12 / 2025","retrieved":"2026-11-03","confidence":"low","is_program_size":false,"page":"explorer"},{"id":"lnp.gas-reservation","policy_source_url":"https://www.nationals.org.au/election-policies/our-plan-to-deliver-australian-gas-for-australians","label":"Coalition: gas reservation (estimate)","low":0,"central":0,"high":0.5,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"","orientation":"n/a","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false,"page":"explorer"},{"id":"grn.rent-freeze","label":"Greens: rent freeze (household saving) (estimate)","low":1100,"central":2000,"high":3100,"unit":"AUD per household/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.cotality.com/au/insights/articles/rental-growth-loses-momentum-as-vacancy-rates-rise","policy_source_url":"https://greens.org.au/news/media-release/housing-battle-lines-drawn-labor-tinkers-while-prices-soar-dutton-sends-prices","orientation":"Cotality (industry data): median rent $713/wk (Sep 2026) x rent growth avoided over a 2-year freeze: 2.0% (Cotality Sep qtr annualised), 3.6% (ABS CPI rents), 5.5% (Cotality y/y). $0 for tenants whose rent would not have risen; rents are a state power","as_of":"2026-10-09 (Sep qtr 2026)","retrieved":"2026-11-09","confidence":"low","is_program_size":false,"page":"explorer"},{"id":"haines.regional","label":"Independent (Haines): 15 regional commitments (estimate)","low":1.34,"central":2.05,"high":2.05,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.pbo.gov.au/elections/2025-general-election/2025-election-commitments-report/independent-member-Indi","orientation":"PBO (independent, official)","as_of":"2025 ECR","retrieved":"2026-11-03","confidence":"medium","is_program_size":false,"page":"explorer"},{"id":"baseline.family-tax-benefit","label":"Family Tax Benefit A+B (program size) (estimate)","low":18.15,"central":18.15,"high":18.15,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.dss.gov.au/system/files/documents/2026-05/portfolio-budget-statements-2026-27-social-services.pdf","orientation":"Official Budget data: DSS PBS 2026-27 Program 1.1 (A 14.119 + B 4.031)","as_of":"2026-05-12 (Budget)","retrieved":"2026-11-03","confidence":"high","is_program_size":true,"page":"explorer"},{"id":"baseline.child-care-subsidy","label":"Child Care Subsidy (program size) (estimate)","low":16.917,"central":16.917,"high":16.917,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.education.gov.au/download/20342/2026-27-education-portfolio-budget-statements/44709/2026-27-education-portfolio-budget-statements/pdf","orientation":"Official Budget data: Education PBS 2026-27 Program 1.2","as_of":"2026-05-12 (Budget)","retrieved":"2026-11-03","confidence":"high","is_program_size":true,"page":"explorer"},{"id":"baseline.age-pension","label":"Age Pension (program size) (estimate)","low":68.67,"central":68.67,"high":68.67,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://www.dss.gov.au/system/files/documents/2026-05/portfolio-budget-statements-2026-27-social-services.pdf","orientation":"Official Budget data: DSS PBS 2026-27 Program 1.3","as_of":"2026-05-12 (Budget)","retrieved":"2026-11-03","confidence":"high","is_program_size":true,"page":"explorer"},{"id":"baseline.ndis","label":"NDIS (program size) (estimate)","low":56.124,"central":56.124,"high":56.124,"unit":"AUD bn/yr","central_bn":null,"bn_unit":null,"source_url":"https://budget.gov.au/content/bp1/download/bp1_bs-6.pdf","orientation":"Official Budget data: Budget Paper 1 2026-27 Statement 6 Table 6.1.3","as_of":"2026-05-12 (Budget)","retrieved":"2026-11-03","confidence":"high","is_program_size":true,"page":"explorer"},{"id":"state.policies","label":"State and territory policies (household) (estimate)","low":-2000,"central":0,"high":2000,"unit":"AUD per household/yr","central_bn":null,"bn_unit":null,"source_url":"","orientation":"n/a","as_of":"2026-11-03","retrieved":"not verified","confidence":"very low","is_program_size":false,"page":"explorer"}];
 const EST_PARTY: Record<string, string> = { rep: "US Republicans", dem: "US Democrats", lnp: "Coalition", grn: "Greens", onp: "One Nation", haines: "Independent (Haines)", baseline: "Current programs (size only)", state: "State policies" };
 const estOK = (x: any) => typeof x === "number" && isFinite(x);
 const estFmt = (x: any) => estOK(x) ? (x > 0 ? "+" : "") + (Math.abs(x) >= 100 ? Math.round(x).toLocaleString() : String(Math.round(x * 1000) / 1000)) : "not yet sourced";
@@ -1690,4 +1731,5 @@ function EstimateBlock({ page }: { page: string }) {
     </div>
   );
 }
+
 

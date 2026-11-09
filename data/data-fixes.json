@@ -165,5 +165,89 @@
     "fix": "All 3 approved explorer fixes present in merged canvas: (1) labour-income gating line 1426-1427 (retiree/student/smb default labour 0), WATO/deduction use labour; (2) Coalition window sums coalitionUCB.slice(1) from 2026-27 (line 1455, text 1533); (3) Greens childcare note line 1495. Minor: chart at line 1535 still shows the 2025-26 bar. Spec for developer (optional): drop index 0 from labels and data in that chart, or label it '2025–26 (outside window)'."
    }
   ]
+ },
+ "review9": {
+  "date": "2026-11-09",
+  "source": "Economist accuracy review, round 3 (31 items)",
+  "canvas_edited": false,
+  "baseline_refresh": {
+   "aud_usd": {
+    "value": 0.6894,
+    "date": "2026-11-09",
+    "source": "RBA F11.1 https://www.rba.gov.au/statistics/tables/csv/f11.1-data.csv",
+    "previous": 0.7038
+   },
+   "us_unemployment": {
+    "value": 4.1,
+    "period": "Oct 2026",
+    "released": "2026-11-06",
+    "source": "BLS LNS14000000 (preliminary); payrolls +165k",
+    "previous": 4.2
+   },
+   "brent_futures": {
+    "value": 98.32,
+    "date": "2026-11-06",
+    "source": "Reuters/Euronext; CNBC (January contract)",
+    "previous": 104.77
+   },
+   "us_midterms": "Democrats win both chambers (AP via Guardian/congresscountdown, 8-9 Nov 2026); new Congress 3 Jan 2027",
+   "aus_cpi": {
+    "headline_monthly": 4.3,
+    "trimmed_mean": 3.6,
+    "period": "Sep 2026",
+    "source": "ABS monthly CPI, 28 Oct 2026",
+    "quarterly_3_9": "kept, labelled quarterly, not re-checked"
+   }
+  },
+  "household_au": {
+   "help_2026_27": {
+    "threshold": 69528,
+    "rate15_to": 129717,
+    "base_above": 9028,
+    "rate17": 0.17,
+    "ten_pct_total_income_from": 186051,
+    "source": "https://www.ato.gov.au/tax-rates-and-codes/study-and-training-support-loans-rates-and-repayment-thresholds"
+   },
+   "medicare_levy_2025_26": {
+    "lower": 28011,
+    "upper": 35013,
+    "phase_in": 0.1,
+    "sapto_lower": 44268,
+    "sapto_upper": 55335,
+    "source": "https://www.ato.gov.au/individuals-and-families/medicare-and-private-health-insurance/medicare-levy/medicare-levy-reduction/medicare-levy-reduction-for-low-income-earners"
+   },
+   "greens_2026_threshold": {
+    "to": 26000,
+    "max_saving": 1092,
+    "pbo_cost_bn_per_yr": 22,
+    "source": "https://www.abc.net.au/news/2026-10-27/greens-leader-proposes-tax-cut-and-welfare-boost/107315572"
+   },
+   "coalition_2026": {
+    "tax_back_guarantee": [
+     250,
+     500,
+     750,
+     1000
+    ],
+    "replaces_wato": 250,
+    "first_year": "2029-30",
+    "source": "https://www.liberal.org.au/2026/10/26/coalition-will-cut-labors-waste-cut-taxes-and-tackle-the-cost-of-living"
+   }
+  },
+  "gdp_conversions": {
+   "au_bn_per_pct": 31,
+   "au_basis": "Budget Paper No. 1 2026-27: $31.5bn = 1.0% of GDP (nominal GDP about A$3.09tn)",
+   "us_tn_per_pct": 0.319,
+   "us_basis": "CBO FY2026 GDP $31.90tn",
+   "note": "estimates.json still converts with its own A$3,020bn / US$33,010bn denominators (Economist to decide whether to align)"
+  },
+  "anu_link": "https://crawford.anu.edu.au/ttpi/research",
+  "pending_owner_approval": [
+   "ECN-02",
+   "ECN-03",
+   "ECN-04",
+   "ECN-05 (values; dormant per-lever end-year hook added in code)",
+   "ECN-28 (adding the levy to the Greens preset / Parties costing label)"
+  ]
  }
 }

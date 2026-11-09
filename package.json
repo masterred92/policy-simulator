@@ -6,7 +6,10 @@
   "scripts": {
     "test": "cd tests && node touch.js",
     "test:presets": "cd tests && node pre.js",
-    "test:merged": "cd tests && node merged.js"
+    "test:merged": "cd tests && node merged.js",
+    "test:round2": "cd tests && node round2.js",
+    "test:round3": "cd tests && node round3.js",
+    "test:engine": "node tests/engine_r9.js"
   },
   "devDependencies": {
     "esbuild": "^0.28.2",

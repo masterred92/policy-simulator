@@ -105,8 +105,8 @@
    "tab": "Parties: compare all (How much of each platform is costed) + party presets",
    "unit": "% of GDP a year (lever units); reviewer entries in bn/yr need converting",
    "estimates_id": "grn_carbon_price",
-   "estimate_verified": false,
-   "displayed": "estimate pending marker only"
+   "estimate_verified": true,
+   "displayed": "PBO ECR-2025-3365 range in the estimates block; still left at baseline in the Greens preset (adding it needs owner approval, ECN-28)"
   },
   {
    "id": "grn.public-housing",
