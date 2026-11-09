@@ -61,11 +61,32 @@ Economist review9 items ECN-02, ECN-03, ECN-04, ECN-05 and ECN-28 (Greens preset
 - **ECN-04, Greens**: new revenue +0.9% of GDP, range +0.55 (gas only) to +1.5, from +1.5. Note: "royalties figure is a state-level estimate; federal mechanism not specified".
 - **ECN-28, Greens**: carbon levy (PBO ECR-2025-3365, central A$17.2bn a year) added as +0.55% of GDP on the tax lever (A$31bn per 1% of GDP). Greens tax lever 1.13 -> 1.08 (-0.37 + 0.9 + 0.55). Parties costing: "Carbon price (PBO 2025, 2025 platform)", official.
 - **ECN-05, fixed timing**: `Party.sched` gives a lever a path by calendar year that overrides the duration setting. In `run()` the lever is split into the scheduled part and any rest (which follows the duration setting); with no schedule the engine is unchanged (tests/engine_r10.js). Used by the Republican dividend and the Coalition savings and tax on the Parties tab and Mix & match, and in the Simulator after "Run <party> in the Simulator" while the lever still equals the party value (a note shows the fixed years).
-- **Not applied, ECN-05 One Nation fuel excise ("halve fuel excise for 3 years")**: the review gives no start or end year and no share of the -0.6% GDP One Nation tax lever, which also holds income splitting, no GST on insurance and the retiree threshold. Needed: the fuel excise part in % of GDP a year and its first year.
+- **ECN-05 One Nation fuel excise (applied 9 Nov 2026, owner approval)**: fuel excise halving -0.28% of GDP (A$8.6bn a year, range A$6.0bn to A$13.9bn; half of Budget 2026-27 fuel excise net of fuel tax credits) in FY2027-28 to FY2029-30 only, calendar 2028 to 2030 in the model. Start year: our assumption; One Nation states no start date. Its wording: "Halve the fuel excise to 26 cents per liter for 3 years with a review after 12 months, with the option to extend further." The other tax items (-0.32) follow the duration setting, so the lever total stays -0.6 while the fuel cut is on and is -0.32 from FY2030-31. The total is a single value (`ONP_TAX.total`); moving it to -0.74 (the sum of item estimates) awaits owner approval. The fuel estimate in `estimates.json` moves from 5.5 / 6.0 / 6.5 to 6.0 / 8.6 / 13.9.
 
 ## Data refresh (2026-11-09, Economist; verified rows only)
 - **Constants**: US 10-year yield `B.y10` 4.91 -> 4.88 (US Treasury, 9 Nov; the old 4.91% was the 2 Nov reading). `BRENT` futures $98.32 (6 Nov) -> $92.57 (9 Nov settle, January contract; Dow Jones Market Data via Morningstar; Reuters). EIA Brent daily spot $123.10 (27 Oct) -> $107.03 (3 Nov; released 4 Nov; next 12 Nov), now stored once in `BRENT.spot`.
 - **Data rows**: iron ore US$92.9/dmt (Mysteel SEADEX, 9 Nov; SGX figure dropped); ECB deposit rate 2.50% with source ECB Data Portal; UK Bank Rate 4.00% (5 Nov, 8-1; BoE lever hint too); euro-area HICP 4.0% (Oct flash, 4 Nov); China CPI 0.7% (Oct), PPI +5.7%; "Checked" now "9 Nov 2026 (refreshed rows only)". Re-checked and unchanged: RBA 4.85%, AUD 0.6894, US unemployment 4.1% and payrolls +165k, Fed 3.75-4.00%. MPs owning investment properties stays UNVERIFIED.
 - **What changed**: as of "9 Nov 2026 (US close)". Items replaced with the refresh items (midterms House 254-163 with 18 uncalled, Senate 54-44; RBA and Fed; euro-area 4.0%; BoE 4.00% and Norges 4.50%; payrolls; Brent; China; AUD and ASX; 10-year yield; Australian CPI kept). The RBA "18-year high" is kept at the owner's instruction. Upcoming list replaced with 13 dated items (10 Nov to 10 Dec, including ABS Labour Force on 19 Nov). Items render as "<date>: <text>" and move to the past list on their date.
 - **GDP re-base**: estimates.json % of GDP now uses AU A$3,095bn and US $31,902bn (was A$3,020bn and $33,010bn), matching the page's A$31bn and US$0.319tn per 1%. Values recomputed from each item's bn figures (AU shares about 2.4% smaller, US shares about 3.5% larger). Estimates are display-only, so the engine does not move because of the re-base.
-- **Not changed (flag for Economist)**: the engine starting values `B.euPi` 3.8 and `B.cnPi` 0.9 still differ from the refreshed Data rows (4.0% and 0.7%); the refresh lists only `B.y10` and `BRENT` as constants.
+- **Resolved**: `B.euPi` and `B.cnPi` now match the Data rows (see the next section).
+
+## Model inputs matched to the Data rows (2026-11-09, Economist confirmed)
+
+Every model starting value that has a "Data & sources" row now uses that row's value. The input matching does not touch party presets (One Nation ECN-05 is applied separately in the same release, above).
+
+| Input | Before | After | Data row |
+|---|---|---|---|
+| `B.euPi` euro-area inflation | 3.8 | 4.0 | Euro area GDP / HICP: 4.0% (Oct flash, Eurostat) |
+| `B.cnPi` China CPI | 0.9 | 0.7 | China GDP / CPI: 0.7% (Oct, NBS) |
+| `B.ukG` UK growth | 1.0 | 1.2 | UK GDP growth: 1.2% y/y (ONS; the Europe table already used 1.2) |
+| `EU uk.rate` (now `B.boe`) | 3.75 | 4.00 | UK CPI / Bank Rate: 4.00% (5 Nov 2026) |
+| `EU is.def` Iceland balance | 0.0 | -0.1 | Iceland budget 2027: surplus ISK 5bn (0.1% GDP) |
+
+- **Brent futures $92.57 and iron ore US$92.9**: no level enters the engine (the oil and China levers are % shocks). Brent is stored once in `BRENT` (already wired); iron ore is now stored once in `IRON` and read by its Data row, the China lever hint and the source link.
+- **Norway**: the budget row is the structural non-oil deficit, a different measure from the engine's overall balance; not compared.
+- **Wiring**: Data rows, slider hints, central-bank cards, the yen scoreboard note and US gross debt are written from `B`, `EU`, `BRENT` and `IRON` in code (new `B` keys: `boe`, `ecb`, `boj`, `usGross`). `tests/inputs_match.js` fails if a row and its input disagree, a row is typed back in as a fixed string, an input has no row, or Road to Surplus starting debt differs from `B`.
+- **Effect on the no-change baseline (middle setting)**: China inflation -0.20 pts in year 1, -0.14 in year 2, about 0 by year 10; euro-area inflation +0.20 / +0.12 / about 0; UK growth +0.20 / +0.14 / about 0. US and Australian outputs and every party preset result are unchanged. Europe table: UK policy rate 3.75 -> 4.00 in year 1, deficit +0.04 to +0.05 pts, net debt +0.3 pts by year 10; Iceland deficit -0.10 in year 1, debt -0.6 pts by year 10.
+
+## Start screen: choose a country (2026-11-09)
+
+The page opens on a country choice: United States, Australia, or Both: compare. Picking one opens the Simulator set to that country (its lever group first, its scoreboard figures and charts, its Parties comparison and its Road to Surplus country). A Country row at the top of every tab switches later or returns to the start screen. Links with `?country=us|au|both`, `#us`, `#au`, `#both` or `?tab=...` skip the start screen when the address reaches the app; the published host currently runs the app in a frame and does not pass the address on, so on the published page every visit starts at the choice.

@@ -12,7 +12,9 @@ An interactive, illustrative model of how US and Australian party policies might
   - `tests/round2.js` – checks for the round-2 data fixes (tariff wording, QCEW farm jobs, outside-window label, links).
   - `tests/round3.js` – checks for the review9 fixes (Economist round 3 and Study Bot usability): dated "What changed", refreshed data, household rules, estimates, phone layout, r − g definition, no NaN, no console errors.
   - `tests/round4.js` – checks for the review10 party preset changes (Republican dividend timing and CRFB label, Coalition timing net of WATO, Greens revenue range and carbon levy, fixed timing in the Simulator), no NaN, no console errors; 390px touch and 1280px click.
-  - `tests/engine_r10.js` – engine regression against the review9 engine (BASE_REF, default b697469, with the refreshed 10-year yield): scenario presets, unchanged parties and the engine with no schedule match exactly; lists what moved for the changed parties, checks the fixed timing and reports the yield refresh's own effect. Replaces `engine_r9.js` (in git history).
+  - `tests/engine_r11.js` – engine regression against the review9 engine (BASE_REF, default b697469, given the same new starting values: 10-year yield, China CPI, euro-area HICP, UK growth): scenario presets, unchanged parties and the engine with no schedule match exactly; lists what moved for the changed parties, checks the fixed timing (including One Nation's fuel excise part, 2028 to 2030) and reports the effect of the new starting values on the baseline, including the Europe table against PREV_REF (default c54b052). Replaces `engine_r9.js` and `engine_r10.js` (in git history).
+  - `tests/landing.js` – the start screen (country choice): it shows first, each choice is a 44px+ target that opens the Simulator set to that country, the Country row switches later and returns to the start screen, and (local build) links with `?country=`, `#us`/`#au`/`#both` or `?tab=` skip it; 390px touch and 1280px click, no NaN, no console errors. Other tests pick "Both" on the start screen automatically (`tests/lib.js`).
+  - `tests/inputs_match.js` – every model starting value with a Data & sources row must show the same number in that row; fails on a mismatch, a missing row, a row typed in as a fixed string or a new input without a row.
 - `data/estimates.json` – estimates for uncosted items, with source, confidence and orientation.
 - `data/data-fixes.json`, `docs/data-fixes.md` – data corrections applied, with sources.
 - `data/uncosted_items.json` – which policies lack an official costing.
@@ -27,6 +29,8 @@ npm run test:round2
 npm run test:round3      # URL=file:///path/to/local/index.html for a local build
 npm run test:round4
 npm run test:engine
+npm run test:inputs
+npm run test:landing
 ```
 
 ## Data sources

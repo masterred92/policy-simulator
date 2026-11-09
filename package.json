@@ -10,7 +10,9 @@
     "test:round2": "cd tests && node round2.js",
     "test:round3": "cd tests && node round3.js",
     "test:round4": "cd tests && node round4.js",
-    "test:engine": "node tests/engine_r10.js"
+    "test:engine": "node tests/engine_r11.js",
+    "test:inputs": "node tests/inputs_match.js",
+    "test:landing": "cd tests && node landing.js"
   },
   "devDependencies": {
     "esbuild": "^0.28.2",

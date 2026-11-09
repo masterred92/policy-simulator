@@ -9,7 +9,12 @@ const SNAP=()=>document.body.innerText+"#"+[...document.querySelectorAll("svg")]
  for(const tn of tabs){if(ONLY&&tn!==ONLY)continue;if(tn)await L.go(f,tn);
   // open all collapsibles so their controls are tested
   await f.evaluate(async()=>{for(let k=0;k<3;k++){document.querySelectorAll('button[aria-expanded="false"]').forEach(b=>b.click());await new Promise(r=>setTimeout(r,300));}});
-  const n=await f.evaluate(()=>{const els=[...document.querySelectorAll("button,select,input,[role=slider],[role=tab]")].filter(e=>!(e.tagName==="SELECT"&&[...e.options].some(o=>o.textContent==="Sectors"))&&e.getClientRects().length);els.forEach((e,i)=>e.setAttribute("data-tt",i));return els.length;});
+  const tag=()=>f.evaluate(()=>{const els=[...document.querySelectorAll("button,select,input,[role=slider],[role=tab]")].filter(e=>!(e.tagName==="SELECT"&&[...e.options].some(o=>o.textContent==="Sectors"))&&e.getClientRects().length);els.forEach((e,i)=>e.setAttribute("data-tt",i));return els.length;});
+  const n=await tag();
+  // Country row: after a control changes the country or opens the start screen, go back to "Both" (the state the controls were listed in) and re-tag
+  const restore=async()=>{const st=await f.evaluate(()=>({landing:!!document.querySelector("[data-landing]"),both:document.querySelector('[data-chip="home-both"]')?.getAttribute("aria-pressed")==="true"}));if(!st.landing&&st.both)return;
+   if(st.landing)await f.evaluate(()=>document.querySelector('[data-country="both"]').click());else await f.evaluate(()=>document.querySelector('[data-chip="home-both"]').click());await w(500);
+   if(tn)await L.go(f,tn);await f.evaluate(async()=>{for(let k=0;k<3;k++){document.querySelectorAll('button[aria-expanded="false"]').forEach(b=>b.click());await new Promise(r=>setTimeout(r,300));}});await tag();};
   const res=[];
   for(let i=0;i<n;i++){
    const st=await f.evaluate((i)=>{const e=document.querySelector(`[data-tt="${i}"]`);if(!e)return null;e.scrollIntoView({block:"center",inline:"nearest"});const T=(e.type==="checkbox"&&e.getBoundingClientRect().width<8)?(e.closest("label")||e.parentElement):e;const r=T.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;const top=document.elementFromPoint(cx,cy);
@@ -31,7 +36,7 @@ const SNAP=()=>document.body.innerText+"#"+[...document.querySelectorAll("svg")]
    await w(450);const after=await f.evaluate(SNAP);changed=after!==before;
    if(!changed&&st.tag==="BUTTON"){const sib=await f.evaluate(i=>{const e=document.querySelector(`[data-tt="${i}"]`);const s=[...e.parentElement.querySelectorAll(":scope > button")].find(x=>x!==e);if(!s)return false;s.click();return true;},i);if(sib){await w(400);const mid=await f.evaluate(SNAP);const st2=await f.evaluate(i=>{const e=document.querySelector(`[data-tt="${i}"]`);const r=e.getBoundingClientRect();return{cx:r.left+r.width/2,cy:r.top+r.height/2}},i);if(touch)await pg.touchscreen.tap(o.x+st2.cx,o.y+st2.cy);else await pg.mouse.click(o.x+st2.cx,o.y+st2.cy);await w(400);changed=(await f.evaluate(SNAP))!==mid;}}
    if(!changed)fails.push("real input changed nothing");
-   res.push({lab:st.lab,tag:st.tag,type:st.type,fails});}
+   res.push({lab:st.lab,tag:st.tag,type:st.type,fails});await restore();}
   const bad=res.filter(r=>r.fails.length);per[tn||"page"]={controls:res.length,ok:res.length-bad.length,fail:bad.length,bad:bad.map(r=>`${r.tag}${r.type==="range"?"(range)":""} "${r.lab}": ${r.fails.join("; ")}`)};
   console.log(W,tn||"page",res.length,"ok",res.length-bad.length,"fail",bad.length);
   await f.evaluate(()=>scrollTo(0,0));await pg.screenshot({path:`../screens/touch_${TAG}_${W}_${(tn||"parties_explorer").replace(/\W+/g,"_")}.png`});
